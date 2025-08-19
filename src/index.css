@@ -1,1 +1,10 @@
+
+@import url("https://api.fontshare.com/v2/css?f[]=general-sans@1&display=swap");
 @import "tailwindcss";
+
+body {
+  font-family: "General Sans", sans-serif;
+}
+
+
+
