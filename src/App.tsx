@@ -1,5 +1,5 @@
 
-import { Route, BrowserRouter, Routes } from 'react-router-dom'
+import { Route, Router, Routes } from 'react-router-dom'
 import SignIn from './pages/auth/SignIn'
 import Layout from './components/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
@@ -13,25 +13,25 @@ function App() {
   return (
     <>
 
-      <BrowserRouter basename='/app'>
+   
 
+ 
+      <Routes>
+        <Route path="/login" element={<SignIn />} />
+        <Route path="/register" element={<Register />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Routes>
-          <Route path="/login" element={<SignIn />} />
-          <Route path="/register" element={<Register />} />
-          <Route path='/forgot-password' element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+        <Route element={<Layout />}>
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
 
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-
-          </Route>
-        </Routes>
-      </BrowserRouter>
+        </Route>
+      </Routes>
+      
 
     </>
   )
