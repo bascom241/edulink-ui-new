@@ -1,4 +1,4 @@
-import React from 'react'
+
 import RecentSessions from './RecentSessions'
 import TodaySession from './TodaySession'
 const Sessions = () => {

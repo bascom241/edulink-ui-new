@@ -1,4 +1,4 @@
-import React from "react";
+
 import Image1 from "../../../assets/wi-fi-router-with-blue-optical-fiber.jpg";
 import useMultiformStore from "../../../store/Multiform";
 import { motion } from "framer-motion";

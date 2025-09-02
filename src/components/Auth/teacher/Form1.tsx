@@ -1,4 +1,4 @@
-import React from "react";
+
 import Image1 from "../../../assets/woman-typing-laptop-keyboard.jpg";
 import useMultiformStore from "../../../store/Multiform";
 import { motion } from "framer-motion";

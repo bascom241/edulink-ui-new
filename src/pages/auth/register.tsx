@@ -1,5 +1,4 @@
-import React from 'react'
-import { useState } from 'react'
+
 import useMultiformStore from '../../store/Multiform'
 import Form0 from '../../components/Auth/Form0'
 import Form1S from '../../components/Auth/student/Form2'
@@ -9,7 +8,7 @@ import Form2T from '../../components/Auth/teacher/Form2'
 import Form3T from '../../components/Auth/teacher/Form3'
 import Form4T from '../../components/Auth/teacher/Form4T'
 const Register = () => {
-  const { currentStep, setCurrentStep, formData } = useMultiformStore();
+  const { currentStep,  formData } = useMultiformStore();
   console.log("Current Step:", currentStep);
 
 

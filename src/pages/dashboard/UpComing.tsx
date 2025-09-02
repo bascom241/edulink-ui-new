@@ -23,3 +23,6 @@ const UpcomingAssignments = () => {
     </div>
   );
 };
+
+
+export default UpcomingAssignments;

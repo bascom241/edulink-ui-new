@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image1 from "../../assets/wi-fi-router-with-blue-optical-fiber.jpg"
 import { useAuthStore } from '../../store/useAuthStore';

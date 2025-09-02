@@ -1,8 +1,8 @@
-import React from 'react'
+
 import Header from './header'
 import CurrentClass from './CurrentClass'
 import Introduction from './Introduction'
-import TodaySession from './Sessions'
+
 import Sessions from './Sessions'
 import QuickActions from './QuickActions'
 import RecentResources from './RecentsResources'

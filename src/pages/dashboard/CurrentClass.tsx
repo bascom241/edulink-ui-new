@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Timer, User, Clock, Calendar } from "lucide-react"
 
 const CurrentClass = () => {
