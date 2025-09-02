@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import axiosInstance from '../lib/axios';
-import type { FormData } from './Multiform';
+
 
 const authKey = 'authToken';
 export interface AuthState {
