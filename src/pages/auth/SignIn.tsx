@@ -26,6 +26,9 @@ const SignIn = () => {
     return () => clearTimeout(timer);
   }, []);
 
+
+  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -38,7 +41,8 @@ const SignIn = () => {
     e.preventDefault();
     const success = await login(formData);
     if (success) {
-      setForgotPassword(false)
+      navigate("/dashboard");
+      setForgotPassword(false);
       console.log("Congratulations Here");
       // navigate("/dashboard")
     } else {
