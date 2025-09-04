@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from 'lucide-react';
 import SignInSkeleton from '../../components/skeletons/SignInSkeleton';
-
+import toast from 'react-hot-toast';
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -43,10 +43,9 @@ const SignIn = () => {
     if (success) {
       navigate("/dashboard");
       setForgotPassword(false);
-      console.log("Congratulations Here");
-      // navigate("/dashboard")
+      // toast.success("Login successful!");
     } else {
-      console.log("Failed")
+      toast.error("Login failed. Please try again.");
       setForgotPassword(true);
     }
 

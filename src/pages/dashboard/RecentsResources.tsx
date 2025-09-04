@@ -1,9 +1,17 @@
+import { useSessionStore } from "../../store/useSessionStore";
+
 const RecentResources = () => {
+  const {currentSession } = useSessionStore()
+
+  console.log(currentSession);
+
   const resources = [
     { id: 1, title: "Calculus Textbook", type: "PDF", subject: "Mathematics" },
     { id: 2, title: "Chemistry Lab Notes", type: "Document", subject: "Science" }
   ];
 
+
+  // const mostRecenSession = 
   return (
     <div className='w-full mt-4 p-6 bg-white rounded-2xl shadow-lg border border-gray-100'>
       <h2 className='text-xl font-bold text-gray-800 mb-4'>Recent Resources</h2>

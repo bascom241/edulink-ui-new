@@ -7,11 +7,19 @@ import Register from './pages/auth/register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
 import ProtectedRoute from './components/ProtectedRoute'
+import { Toaster } from 'react-hot-toast';
+import { useAuthStore } from './store/useAuthStore'
+import { useEffect } from 'react'
 function App() {
+  const { getUser } = useAuthStore();
 
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <>
+      <Toaster position='bottom-right' reverseOrder={false} />
 
    
 

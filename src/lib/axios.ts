@@ -29,9 +29,9 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use((response )=> {
     return response;
 }, async (error )=>{
-    if(error && error.response.status === 401){
+    if(error ){
           console.log("Unauthorized, handling token refresh or logout");
-        localStorage.removeItem("authToken")
+        // localStorage.removeItem("authToken")
     } return Promise.reject(error);
 })
 export default axiosInstance;

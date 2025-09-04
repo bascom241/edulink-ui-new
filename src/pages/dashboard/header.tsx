@@ -1,6 +1,12 @@
-
+import { useAuthStore } from "../../store/useAuthStore"
 import { Bell, CircleUserRound } from "lucide-react"
+
+
 const Header = () => {
+  const { user } = useAuthStore();
+
+  
+
   return (
      <header className='flex justify-end gap-2 items-center'>
         <div className='flex justify-between gap-4 items-center'>
@@ -13,7 +19,7 @@ const Header = () => {
           <div className='flex items-center gap-2'>
             <CircleUserRound className=' ' color='green' />
             <p>
-              Abdulbasit Abdulwahab
+            {user ? user.firstName + " " + user.lastName : "Dear User"}
             </p>
           </div>
         </div>

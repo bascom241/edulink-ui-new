@@ -2,7 +2,8 @@ import React from "react";
 import Image1 from "../../../assets/wi-fi-router-with-blue-optical-fiber.jpg";
 import useMultiformStore from "../../../store/Multiform";
 import { motion } from "framer-motion";
-
+import { useAuthStore } from "../../../store/useAuthStore";
+import { Loader } from "lucide-react";
 const Form2S = () => {
   const { 
     formData, 
@@ -26,6 +27,26 @@ const Form2S = () => {
 
   // Calculate progress percentage
   const progressPercentage = (currentStep / totalStudentSteps ) * 100;
+
+
+  const {registerUser,isRegistering} = useAuthStore();
+
+
+   const formDataToSend = new FormData();
+    formDataToSend.append(
+      "userRequestDTO", new Blob([JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        role: formData.role,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.phoneNumber,
+        student: formData.student,
+        teacher: formData.teacher
+      })], { type: "application/json" })
+    )
+
 
   return (
     <main className="w-full sm:h-screen flex flex-col lg:flex-row bg-gradient-to-br from-gray-50 to-gray-100">
@@ -169,15 +190,17 @@ const Form2S = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={handleContinue}
+              onClick={()=>registerUser(formDataToSend)}
               disabled={!formData.firstName || !formData.lastName || !formData.phoneNumber}
-              className={`flex-1 py-3 px-6 rounded-xl text-white font-medium transition-all ${
+              className={`flex-1 items-center justify-center py-3 px-6 rounded-xl text-white font-medium transition-all ${
                 formData.firstName && formData.lastName && formData.phoneNumber
                   ? "bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg hover:shadow-xl"
                   : "bg-gray-300 cursor-not-allowed"
               }`}
             >
-              Submit
+                  {
+                isRegistering ?  <Loader className='animate-spin' size={24} /> : "Register as Student"        
+              }
             </motion.button>
           </div>
         </div>

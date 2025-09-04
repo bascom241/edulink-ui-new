@@ -15,6 +15,8 @@ import {
   X
 } from 'lucide-react';
 
+
+
 const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeItem, setActiveItem] = useState('Dashboard');
@@ -31,7 +33,7 @@ const SideBar = () => {
       icon: <PlusCircle size={20} />
     },
     {
-      title: 'Start a Lesson',
+      title: 'Start a Session',
       link: "/start-lesson",
       icon: <BookOpen size={20} />
     },
