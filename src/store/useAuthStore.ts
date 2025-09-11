@@ -41,8 +41,10 @@ interface User {
   governmentIdUrl: string;
 
   classrooms: Classroom[];
-  orders: any[]; // Replace `any` with proper order interface if you have one
+  orders: any[]; 
 
+  sctaPoints: number;
+  noOfSessions: number;
   token: string | null;
   tokenExpiry: string | null;
 }

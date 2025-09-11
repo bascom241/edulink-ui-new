@@ -1,5 +1,5 @@
-import { useSessionStore } from "../../store/useSessionStore";
-import type { CurrentSession } from "../../store/useSessionStore";
+import { useSessionStore } from "../../../store/useSessionStore";
+import type { CurrentSession } from "../../../store/useSessionStore";
 const RecentSessions = () => {
 
     const {currentSession} = useSessionStore();

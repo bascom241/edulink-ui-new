@@ -1,6 +1,6 @@
-import { useSessionStore } from "../../store/useSessionStore";
-import TodaySessionSkeleton from "../../components/skeletons/TodaySessionSkeleton";
-import type { CurrentSession } from "../../store/useSessionStore";
+import { useSessionStore } from "../../../store/useSessionStore";
+import TodaySessionSkeleton from "../../../components/skeletons/TodaySessionSkeleton";
+import type { CurrentSession } from "../../../store/useSessionStore";
 
 const TodaySession = () => {
   const { currentSession, fetchingCurrentSession } = useSessionStore();

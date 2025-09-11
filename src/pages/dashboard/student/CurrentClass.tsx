@@ -1,7 +1,7 @@
 
 import { Timer,  Clock, Calendar } from "lucide-react"
-import { useSessionStore } from "../../store/useSessionStore"
-import { useAuthStore } from "../../store/useAuthStore"
+import { useSessionStore } from "../../../store/useSessionStore"
+import { useAuthStore } from "../../../store/useAuthStore"
 import { useEffect } from "react"
 const CurrentClass = () => {
 

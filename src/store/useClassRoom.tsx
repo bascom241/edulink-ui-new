@@ -1,0 +1,147 @@
+import axiosInstance from "../lib/axios";
+import { create } from "zustand";
+
+import toast from "react-hot-toast";
+
+
+export interface ClassMaterial {
+    title: string;
+    url: string;
+    description?: string; // optional
+}
+
+export interface ClassroomResponseDto {
+    classId: number;
+    className: string;
+    classDescription: string;
+    classroomPrice: number;
+    classroomFull: boolean;
+    classDurationInDays: number;
+    createdAt: string;    // ISO date string
+    expiresAt: string;    // ISO date string
+    classDeliveryModel: string;
+    classLocation: string;
+    targetAudience: string;
+    classCategory: string;
+
+    resources: ClassMaterial[];
+    assignments: ClassMaterial[];
+    tasks: ClassMaterial[];
+
+    numberOfStudents: number;
+    numberOfSessions: number;
+    numberOfQuestions: number;
+}
+
+
+interface ClassRoomInterface {
+
+    instructorClassrooms?: ClassroomResponseDto[];
+    fetchingClassrooms?: boolean;
+    // For Classroom api
+    fetchInstructorClassroomsLength: (instructorEmail: string) => Promise<number>;
+    fetchingClassroomsLength?: boolean;
+    fetchInstructorClassrooms?: (instructorEmail: string) => Promise<ClassroomResponseDto[]>;
+
+
+    singleClassroom?: ClassroomResponseDto;
+    fetchingSingleClassroom?: boolean;
+        fetchSingleClassroom?: (instructorEmail: string, classId: number) => Promise<ClassroomResponseDto>;
+
+    classRoomsLength?: number;
+    createClassroom: (formData: FormData, userId: number) => Promise<boolean>
+    creatingClassroom: boolean
+
+    // For Students api
+    fetchStudentClassroomsLength: (studentEmail: string) => Promise<number>;
+    fetchingStudentClassroomsLength?: boolean;
+    studentClassRoomsLength?: number;
+}
+export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
+
+    instructorClassrooms: [],
+    singleClassroom:undefined,
+    fetchingSingleClassroom:false,
+    fetchingClassrooms: false,
+ 
+    creatingClassroom: false,
+    fetchInstructorClassroomsLength: async (instructorEmail: string) => {
+        set({ fetchingClassroomsLength: true })
+        try {
+            const response = await axiosInstance.get(`/classroom/class-count?email=${instructorEmail}`);
+            console.log(response)
+            set({ classRoomsLength: response.data, fetchingClassroomsLength: false });
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+            set({ fetchingClassroomsLength: false })
+            toast.error("Failed to fetch classrooms")
+            return 0
+        }
+    },
+
+    fetchStudentClassroomsLength: async (studentEmail: string) => {
+        set({ fetchingStudentClassroomsLength: true })
+        try {
+            const response = await axiosInstance.get(`/classroom/students-count?email=${studentEmail}`);
+            console.log(response)
+            set({ studentClassRoomsLength: response.data, fetchingStudentClassroomsLength: false });
+            return response.data
+        } catch (error: any) {
+            console.log(error)
+            set({ fetchingStudentClassroomsLength: false })
+
+            return 0
+        }
+    },
+
+    createClassroom: async (formData, userId) => {
+        set({ creatingClassroom: true })
+        try {
+            const response = await axiosInstance.post(`/classroom/create-class/${userId}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            set({ creatingClassroom: false })
+            console.log(response)
+            toast.success("Classroom has been Created");
+
+            return true
+        } catch (error: any) {
+            set({ creatingClassroom: false })
+            console.log(error)
+            toast.error(error?.message)
+            return false
+        }
+    },
+    // For Instructors Only 
+    fetchInstructorClassrooms: async (instructorEmail) => {
+        set({ fetchingClassrooms: true })
+        try {
+            const response = await axiosInstance.get(`/classroom/instructor-classrooms/${instructorEmail}`);
+            set({ instructorClassrooms: response.data });
+            set({ fetchingClassrooms:false })
+            console.log(response.data)
+            return response.data
+        } catch (error) {
+            set({ fetchingClassrooms: false })
+            toast.error("Failed to fetch classrooms")
+            console.log(error)
+        }
+    },
+    fetchSingleClassroom:async(instructorEmail:string, classId:number) => {
+        set({ fetchingSingleClassroom: true })
+        try {
+            const response = await axiosInstance.get(`/classroom/single-instructor-classroom/${classId}?email=${instructorEmail}`);
+            set({ singleClassroom: response.data });
+            set({ fetchingSingleClassroom:false })
+            console.log(response.data)
+            return response.data
+        } catch (error) {
+            set({ fetchingSingleClassroom: false })
+            toast.error("Failed to fetch classrooms")
+            console.log(error)
+        }
+    }
+}));

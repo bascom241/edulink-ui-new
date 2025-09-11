@@ -1,5 +1,5 @@
 
-import { Route,  Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import SignIn from './pages/auth/SignIn'
 import Layout from './components/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
@@ -10,6 +10,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './store/useAuthStore'
 import { useEffect } from 'react'
+import Classroom from './pages/classroom/Classroom'
+import Classrooms from './pages/classroom/classrooms'
+import ClassroomDetail from './pages/classroom/classroomDetail'
 function App() {
   const { getUser } = useAuthStore();
 
@@ -21,9 +24,9 @@ function App() {
     <>
       <Toaster position='bottom-right' reverseOrder={false} />
 
-   
 
- 
+
+
       <Routes>
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
@@ -31,15 +34,15 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route element={<Layout />}>
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/create-classroom" element={<ProtectedRoute><Classroom /></ProtectedRoute>} />
+          <Route path="/classrooms" element={<ProtectedRoute><Classrooms /></ProtectedRoute>} />
 
         </Route>
+
+
       </Routes>
-      
+
 
     </>
   )

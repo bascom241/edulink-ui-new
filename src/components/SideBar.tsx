@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { 
-  Home, 
-  PlusCircle, 
-  BookOpen, 
-  Building2, 
-  Users, 
-  Settings, 
-  UserCog, 
-  User, 
+import {
+  Home,
+  PlusCircle,
+  BookOpen,
+  Building2,
+  Users,
+  Settings,
+  UserCog,
+  User,
   Bell,
   ChevronRight,
   LogOut,
@@ -15,13 +15,15 @@ import {
   X
 } from 'lucide-react';
 
+import { useAuthStore } from '../store/useAuthStore';
+import { NavLink } from 'react-router-dom';
 
 
 const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeItem, setActiveItem] = useState('Dashboard');
-  
-  const dashBoardContent = [
+
+  const TeacherDashboardContent = [
     {
       title: 'Dashboard',
       link: "/dashboard",
@@ -29,7 +31,7 @@ const SideBar = () => {
     },
     {
       title: 'Create ClassRoom',
-      link: "/add-room",
+      link: "/create-classroom",
       icon: <PlusCircle size={20} />
     },
     {
@@ -39,7 +41,7 @@ const SideBar = () => {
     },
     {
       title: 'My Rooms',
-      link: "/my-rooms",
+      link: "/classrooms",
       icon: <Building2 size={20} />
     },
     {
@@ -69,11 +71,57 @@ const SideBar = () => {
     },
   ];
 
+  const studentDashboardContent = [
+    {
+      title: 'Dashboard',
+      link: "/dashboard",
+      icon: <Home size={20} />
+    },
+    {
+      title: 'My Classes',
+      link: "/my-classes",
+      icon: <Building2 size={20} />
+    },
+    {
+      title: 'Join a Class',
+      link: "/join-class",
+      icon: <PlusCircle size={20} />
+    },
+    {
+      title: 'My Sessions',
+      link: "/my-sessions",
+      icon: <BookOpen size={20} />
+    },
+    {
+      title: 'Profile',
+      link: "/profile",
+      icon: <User size={20} />
+    },
+    {
+      title: 'Notifications',
+      link: "/notifications",
+      icon: <Bell size={20} />
+    },
+    {
+      title: 'Settings',
+      link: "/settings",
+      icon: <Settings size={20} />
+    },
+  ];
+
+  const { user } = useAuthStore();
+  const dashBoardContent = user?.teacher ? TeacherDashboardContent : studentDashboardContent;
+
+
+  const changeActiveItem = (itemTitle: string) => {
+    setActiveItem(itemTitle);
+  }
+
   return (
     <>
       {/* Mobile Menu Button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
-        <button 
+        <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="p-2 rounded-lg bg-green-600 text-white shadow-lg"
         >
@@ -83,7 +131,7 @@ const SideBar = () => {
 
       {/* Overlay for mobile */}
       {isCollapsed && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsCollapsed(false)}
         ></div>
@@ -101,9 +149,9 @@ const SideBar = () => {
         ${isCollapsed ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         glass-morphism
       `}>
-        
+
         {/* Toggle button for desktop */}
-        <button 
+        <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="hidden lg:flex absolute -right-3 top-20 bg-white p-1 rounded-full shadow-md text-green-600 hover:bg-green-50 transition-colors"
         >
@@ -118,7 +166,10 @@ const SideBar = () => {
             </div>
             <h1 className="text-white text-xl font-bold">EduLink</h1>
           </div>
-          <p className="text-green-100 text-sm">Student Room</p>
+          {
+            user?.teacher ? (<p className='text-green-100 text-sm'>Teacher's Space</p>) : (<p className="text-green-100 text-sm">Student's Space</p>)
+          }
+
         </div>
 
         {/* Navigation Items */}
@@ -126,27 +177,29 @@ const SideBar = () => {
           <ul className="space-y-2">
             {dashBoardContent.map((item, index) => (
               <li key={index}>
-                <a
-                  href={item.link}
-                  className={`
-                    flex items-center space-x-3 p-3 
-                    transition-all duration-300 rounded-xl 
-                    cursor-pointer
-                    ${activeItem === item.title 
-                      ? 'bg-white text-green-700 shadow-lg' 
-                      : 'text-white hover:bg-green-500 hover:shadow-md'
-                    }
-                  `}
-                  onClick={() => setActiveItem(item.title)}
+                <NavLink
+                  to={item.link}
+                  className={({ isActive }) =>
+                    `flex items-center space-x-3 p-3 
+             transition-all duration-300 rounded-xl cursor-pointer
+             ${isActive
+                      ? "bg-white text-green-700 shadow-lg"
+                      : "text-white hover:bg-green-500 hover:shadow-md"
+                    }`
+                  }
                 >
-                  <span className={activeItem === item.title ? 'text-green-700' : 'text-white'}>
-                    {item.icon}
-                  </span>
-                  <span className="font-medium">{item.title}</span>
-                  {activeItem === item.title && (
-                    <div className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  {({ isActive }) => (
+                    <>
+                      <span className={isActive ? "text-green-700" : "text-white"}>
+                        {item.icon}
+                      </span>
+                      <span className="font-medium">{item.title}</span>
+                      {isActive && (
+                        <div className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      )}
+                    </>
                   )}
-                </a>
+                </NavLink>
               </li>
             ))}
           </ul>
@@ -163,7 +216,7 @@ const SideBar = () => {
               <p className="text-green-100 text-sm">Professor</p>
             </div>
           </div>
-          
+
           <button className="
             flex items-center space-x-3 w-full p-3 
             text-white rounded-xl 
