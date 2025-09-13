@@ -8,13 +8,14 @@ import { useNavigate } from 'react-router-dom'
 import ClassroomDetail from './classroomDetail'
 import SessionModal from '../../models/SessionModal'
 import type { SessionFormData } from '../../models/SessionModal'
+import { useSessionStore } from '../../store/useSessionStore'
 const Classrooms = () => {
     const { fetchingClassrooms, instructorClassrooms, fetchInstructorClassrooms } = useClassRoomStore()
     const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
     const [selectedClassroomForSession, setSelectedClassroomForSession] = useState<number | null>(null);
     const { user } = useAuthStore()
     const navigate = useNavigate();
-
+    const { createSession, creatingSession } = useSessionStore()
     const [selectedClassroomId, setSelectedClassroomId] = React.useState<number | null>(null);
     useEffect(() => {
         if (user && fetchInstructorClassrooms) {
@@ -39,9 +40,19 @@ const Classrooms = () => {
     }
 
     const handleCreateSession = async (sessionData: SessionFormData) => {
-        // Add your API call to create the session here
+        if (!user || !selectedClassroomForSession) return false
         console.log("Creating session for classroom:", selectedClassroomForSession, sessionData);
-        // You'll likely want to call your backend API here
+        createSession(
+            user.userId,
+            sessionData.topic,
+            sessionData.durationInMinutes,
+            sessionData.allowAnyoneToJoin,
+            sessionData.sessionPassword,
+            sessionData.requirePassword,
+            selectedClassroomForSession
+        )
+
+
     };
 
 

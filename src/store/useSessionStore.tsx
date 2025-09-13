@@ -34,7 +34,7 @@ interface SessionInterface {
     getCurrentTeacherSession: (teacherEmail: string) => Promise<void>
     fetchingTeacherCurrentSession: boolean
     currentTeacherSession: CurrentSession[] | null
-    createSession: (userId: number, topic: string, durationInMinutes: number, allowAnyOneToJoin: boolean, classroomId: number) => Promise<void>
+    createSession: (userId: number, topic: string, durationInMinutes: number, allowAnyOneToJoin: boolean, sessionPassword:string , requirePassword:boolean, classroomId: number) => Promise<void>
 
 
 }
@@ -73,10 +73,10 @@ export const useSessionStore = create<SessionInterface>((set) => ({
             // toast.error(error?.message)
         }
     },
-    createSession: async (userId: number, topic: string, durationInMinutes: number, allowAnyOneToJoin: boolean, classroomId: number) => {
+    createSession: async (userId: number, topic: string, durationInMinutes: number, allowAnyoneToJoin: boolean,sessionPassword:string ,  requirePassword:boolean, classroomId: number) => {
         set({creatingSession:true })
         try {
-            const response = await axiosInstance.post(`/sessions/create?userId=${userId}&topic=${topic}&durationInMinutes=${durationInMinutes}&allowAnyOneToJoin=${allowAnyOneToJoin}&classroomId=${classroomId}`)
+            const response = await axiosInstance.post(`/sessions/create?userId=${userId}&topic=${topic}&durationInMinutes=${durationInMinutes}&allowAnyoneToJoin=${allowAnyoneToJoin}&sessionPassword=${sessionPassword}&requirePassword=${requirePassword}&classroomId=${classroomId}`)
             console.log(response);
             set({creatingSession:false})
 

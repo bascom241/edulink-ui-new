@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-import { 
-  X, Clock, MapPin, Link as LinkIcon, Globe, Users, 
-  Settings, Shield, AlertCircle, Lock, Eye, EyeOff 
+import { useClassRoomStore } from '../store/useClassRoom';
+import { useSessionStore } from '../store/useSessionStore';
+import {
+  X, Clock, MapPin, Link as LinkIcon, Globe, Users,
+  Settings, Shield, AlertCircle, Lock, Eye, EyeOff, Loader
 } from 'lucide-react';
 
 interface SessionModalProps {
@@ -30,7 +31,7 @@ const backdropVariants = {
 };
 
 const modalVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
     scale: 0.8,
     y: 50
@@ -58,8 +59,8 @@ const modalVariants = {
 
 const tabContentVariants = {
   hidden: { opacity: 0, x: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     x: 0,
     transition: {
       duration: 0.3
@@ -74,16 +75,16 @@ const tabContentVariants = {
   }
 };
 
-const SessionModal: React.FC<SessionModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  classroomId, 
-  onCreateSession 
+const SessionModal: React.FC<SessionModalProps> = ({
+  isOpen,
+  onClose,
+  classroomId,
+  onCreateSession
 }) => {
   const [formData, setFormData] = useState<SessionFormData>({
     topic: '',
     durationInMinutes: 60,
-    allowAnyoneToJoin: false,
+    allowAnyoneToJoin: false, 
     sessionClassLink: '',
     sessionClassLocation: '',
     requirePassword: false,
@@ -93,7 +94,10 @@ const SessionModal: React.FC<SessionModalProps> = ({
   const [activeTab, setActiveTab] = useState<'basic' | 'security'>('basic');
   const [showPassword, setShowPassword] = useState(false);
 
+ const { creatingSession} = useSessionStore()
+
   const handleSubmit = (e: React.FormEvent) => {
+    console.log("Working")
     e.preventDefault();
     onCreateSession(formData);
   };
@@ -101,7 +105,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -135,7 +139,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
             required
           />
         </div>
-        
+
         {/* Duration Input */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -157,7 +161,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
           <p className="text-xs text-gray-500 mt-1">Maximum session length is 8 hours (480 minutes)</p>
         </div>
       </div>
-      
+
       {/* Session Type Toggle */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -190,7 +194,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
           </motion.button>
         </div>
       </div>
-      
+
       {/* Location/Link Input */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -267,14 +271,14 @@ const SessionModal: React.FC<SessionModalProps> = ({
           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
         </label>
       </div>
-      
+
       {/* Password Protection */}
       <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
         <div className="flex items-center mb-3">
           <Shield size={18} className="text-blue-500 mr-2" />
           <h3 className="text-sm font-medium text-blue-800">Session Security</h3>
         </div>
-        
+
         <div className="flex items-center mb-4">
           <input
             type="checkbox"
@@ -288,9 +292,9 @@ const SessionModal: React.FC<SessionModalProps> = ({
             Require password to join
           </label>
         </div>
-        
+
         {formData.requirePassword && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             transition={{ duration: 0.3 }}
@@ -323,7 +327,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
           </motion.div>
         )}
       </div>
-      
+
       {/* Security Warning */}
       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
         <div className="flex items-start">
@@ -369,7 +373,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">Create Secure Session</h2>
               </div>
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={onClose}
@@ -378,7 +382,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
                 <X size={24} />
               </motion.button>
             </div>
-            
+
             {/* Tab Navigation */}
             <div className="flex border-b border-gray-100">
               <motion.button
@@ -402,34 +406,38 @@ const SessionModal: React.FC<SessionModalProps> = ({
                 Security
               </motion.button>
             </div>
-            
-            {/* Form (scrollable) */}
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
-              <AnimatePresence mode="wait">
-                {activeTab === 'basic' ? renderBasicInfoTab() : renderSecurityTab()}
-              </AnimatePresence>
-            </form>
 
-            {/* Actions */}
-            <div className="flex gap-3 p-6 border-t border-gray-100">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={onClose}
-                className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md"
-              >
-                Start Secure Session
-              </motion.button>
-            </div>
+ <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-y-auto">
+  {/* Scrollable content */}
+  <div className="flex-1 overflow-y-auto p-6 space-y-6">
+    <AnimatePresence mode="wait">
+      {activeTab === 'basic' ? renderBasicInfoTab() : renderSecurityTab()}
+    </AnimatePresence>
+  </div>
+
+  {/* Sticky footer (doesn’t shrink) */}
+  <div className="flex gap-3 p-6 border-t border-gray-100 shrink-0">
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      type="button"
+      onClick={onClose}
+      className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+    >
+      Cancel
+    </motion.button>
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.95 }}
+      type="submit"
+      className="flex items-center justify-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md"
+    >
+      { creatingSession? <Loader className="animate-spin" /> : "Start Secure Session"}
+    </motion.button>
+  </div>
+</form>
+
+
           </motion.div>
         </motion.div>
       )}
