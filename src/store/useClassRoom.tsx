@@ -43,6 +43,7 @@ interface ClassRoomInterface {
     fetchingClassroomsLength?: boolean;
     fetchInstructorClassrooms?: (instructorEmail: string) => Promise<ClassroomResponseDto[]>;
 
+    uploadClassResources: (resources:any, classId:number) => Promise<boolean >
 
     singleClassroom?: ClassroomResponseDto;
     fetchingSingleClassroom?: boolean;
@@ -52,6 +53,9 @@ interface ClassRoomInterface {
     createClassroom: (formData: FormData, userId: number) => Promise<boolean>
     creatingClassroom: boolean
 
+    generateInviteLink: (classId: number) => Promise<string | undefined>;
+    fetchingInviteLink?: boolean;
+
     // For Students api
     fetchStudentClassroomsLength: (studentEmail: string) => Promise<number>;
     fetchingStudentClassroomsLength?: boolean;
@@ -59,6 +63,7 @@ interface ClassRoomInterface {
 }
 export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
 
+    fetchingInviteLink: false,
     instructorClassrooms: [],
     singleClassroom:undefined,
     fetchingSingleClassroom:false,
@@ -143,5 +148,44 @@ export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
             toast.error("Failed to fetch classrooms")
             console.log(error)
         }
+    },
+     generateInviteLink : async (classId: number) => {
+        set({ fetchingInviteLink: true });
+        try {
+            const response = await axiosInstance.get(`/classroom/${classId}/invite`);
+            set({ fetchingInviteLink: false });
+            return response.data.inviteLink as string;
+        } catch (error) {
+            console.error("Failed to generate invite link: ", error);
+            set({ fetchingInviteLink: false });
+            return "";
+        }
+     }, 
+uploadClassResources: async (formData, classId) => {
+    try {
+        const response = await axiosInstance.put(
+            `classroom/add-resources/${classId}`, 
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+
+        const newResources: ClassMaterial[] = response.data;
+        set((state) => ({
+            singleClassroom: state.singleClassroom
+                ? {
+                    ...state.singleClassroom,
+                    resources: [...state.singleClassroom.resources, ...newResources],
+                }
+                : undefined,
+        }));
+        return true;
+    } catch (error) {
+        console.log(error);
+        return false;
     }
+}
 }));

@@ -35,8 +35,8 @@ const SideBar = () => {
       icon: <PlusCircle size={20} />
     },
     {
-      title: 'Start a Session',
-      link: "/start-lesson",
+      title: 'sessions',
+      link: "/sessions",
       icon: <BookOpen size={20} />
     },
     {
@@ -132,7 +132,7 @@ const SideBar = () => {
       {/* Overlay for mobile */}
       {isCollapsed && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsCollapsed(false)}
         ></div>
       )}

@@ -13,6 +13,7 @@ import { useEffect } from 'react'
 import Classroom from './pages/classroom/Classroom'
 import Classrooms from './pages/classroom/classrooms'
 import ClassroomDetail from './pages/classroom/classroomDetail'
+import Sessions from './pages/sessions/sessions'
 function App() {
   const { getUser } = useAuthStore();
 
@@ -37,7 +38,7 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/create-classroom" element={<ProtectedRoute><Classroom /></ProtectedRoute>} />
           <Route path="/classrooms" element={<ProtectedRoute><Classrooms /></ProtectedRoute>} />
-
+          <Route path='/sessions' element={<ProtectedRoute><Sessions/></ProtectedRoute>}/>
         </Route>
 
 

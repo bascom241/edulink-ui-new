@@ -1,11 +1,14 @@
-import React, { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useClassRoomStore } from '../../store/useClassRoom'
 import { useAuthStore } from '../../store/useAuthStore'
-import { 
-  ArrowLeft, Users, Clock, Calendar, DollarSign, 
-  MapPin, Target, Tag, FileText, BookOpen, 
-  AlertCircle, CheckCircle, BarChart3 
+import {
+  ArrowLeft, Users, Clock, Calendar, DollarSign,
+  MapPin, Target, Tag, FileText, BookOpen,
+  AlertCircle, CheckCircle, BarChart3,
+  FolderPlus
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import ClassResourceModel from '../../models/ClassResourceModel'
 
 interface Props {
   id: number
@@ -13,8 +16,13 @@ interface Props {
 }
 
 const ClassroomDetail = ({ id, goBack }: Props) => {
-  const { singleClassroom, fetchingSingleClassroom, fetchSingleClassroom } = useClassRoomStore()
+  const { singleClassroom, fetchingSingleClassroom, fetchSingleClassroom, generateInviteLink, fetchingInviteLink } = useClassRoomStore()
   const { user } = useAuthStore()
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [studyResourcesModal, setStudyResourcesModal] = useState(false)
+
+
 
   useEffect(() => {
     if (user && fetchSingleClassroom) {
@@ -22,24 +30,38 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
     }
   }, [user, fetchSingleClassroom, id])
 
+
+
+  const [studentInviteLink, setStudentInviteLink] = useState<string>("");
+
+  useEffect(() => {
+    const fetchLink = async () => {
+      if (singleClassroom?.classId && generateInviteLink) {
+        const link = await generateInviteLink(singleClassroom.classId);
+        setStudentInviteLink(link || "");
+      }
+    };
+    fetchLink();
+  }, [singleClassroom?.classId, generateInviteLink]);
+
   if (fetchingSingleClassroom) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="animate-pulse">
             <div className="h-6 w-40 bg-gray-200 rounded mb-8"></div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
                 <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
                   ))}
                 </div>
-                
+
                 <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
                 <div className="space-y-3">
                   {[...Array(3)].map((_, i) => (
@@ -47,7 +69,7 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
                   ))}
                 </div>
               </div>
-              
+
               <div className="space-y-6">
                 <div className="h-64 bg-gray-200 rounded-lg"></div>
                 <div className="h-40 bg-gray-200 rounded-lg"></div>
@@ -59,6 +81,23 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
       </div>
     )
   }
+
+  // Generate invite link based on class ID
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(studentInviteLink || '')
+      .then(() => {
+        setLinkCopied(true);
+        setShowNotification(true);
+        setTimeout(() => {
+          setShowNotification(false);
+          setTimeout(() => setLinkCopied(false), 300);
+        }, 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+  };
 
   if (!singleClassroom) {
     return (
@@ -83,7 +122,6 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
     className,
     classDescription,
     classroomPrice,
-    classroomFull,
     classDurationInDays,
     createdAt,
     expiresAt,
@@ -107,9 +145,6 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
     })
   }
 
-  const statusColor = classroomFull ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-  const statusIcon = classroomFull ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />
-
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-6xl mx-auto">
@@ -124,6 +159,8 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
           </button>
         </div>
 
+
+
         {/* Main content */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           {/* Classroom header */}
@@ -133,13 +170,18 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
                 <h1 className="text-2xl md:text-3xl font-bold">{className}</h1>
                 <p className="mt-2 opacity-90">{classDescription}</p>
               </div>
-              <div className={`mt-4 md:mt-0 inline-flex items-center px-4 py-2 rounded-full ${statusColor}`}>
-                {statusIcon}
-                <span className="ml-2 font-medium">{classroomFull ? 'Class Full' : 'Enrolling'}</span>
-              </div>
             </div>
+
           </div>
 
+          {
+            studyResourcesModal && (
+              <ClassResourceModel 
+              setStudyResourcesModal={setStudyResourcesModal}
+              classId={singleClassroom?.classId}
+              />
+            )
+          }
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
             {/* Left column - Main info */}
             <div className="lg:col-span-2">
@@ -280,67 +322,96 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
 
             {/* Right column - Actions and additional info */}
             <div className="space-y-6">
-              {/* Enrollment status */}
+              {/* Student Invite Link Section */}
               <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-                <h3 className="font-semibold text-lg mb-4">Enrollment Status</h3>
-                <div className={`inline-flex items-center px-4 py-2 rounded-full ${statusColor} mb-4`}>
-                  {statusIcon}
-                  <span className="ml-2 font-medium">{classroomFull ? 'Class Full' : 'Available'}</span>
+                <h3 className="font-semibold text-lg mb-4">Student Invite Link</h3>
+
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Share with Students
+                  </h4>
+                  <div className="flex items-center">
+                    {
+                      fetchingInviteLink ? (
+                        <div>
+
+                          <div className="flex items-center justify-center w-full py-2 border border-gray-300 rounded-l-lg bg-gray-100">
+                            <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                          </div>
+
+                        </div>
+                      ) : (
+                        <></>
+                      )
+                    }
+                    <input
+                      type="text"
+                      readOnly
+                      value={studentInviteLink}
+                      className="flex-1 border border-gray-300 rounded-l-lg py-2 px-3 text-sm text-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    />
+                    <button
+                      onClick={copyToClipboard}
+                      className={`py-2 px-4 rounded-r-lg text-sm font-medium flex items-center bg-indigo-600 text-white hover:bg-indigo-700 transition`}
+                    >
+                      {linkCopied ? (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                          </svg>
+                          Copy Link
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-gray-500 text-xs mt-2">
+                    Share this link with students so they can join your "{className}" class
+                  </p>
                 </div>
-                <p className="text-gray-600 text-sm mt-2">
-                  {classroomFull 
-                    ? 'This class has reached maximum capacity.' 
-                    : 'Spots are available for enrollment.'}
-                </p>
-                <button
-                  className={`mt-4 w-full py-2.5 rounded-lg font-medium ${
-                    classroomFull
-                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700 transition'
-                  }`}
-                  disabled={classroomFull}
-                >
-                  {classroomFull ? 'Class Full' : 'Enroll Now'}
-                </button>
               </div>
+
+              {/* Notification */}
+              {showNotification && (
+                <div className="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center animate-fadeIn">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Invite link copied to clipboard!</span>
+                </div>
+              )}
 
               {/* Quick actions */}
               <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
                 <h3 className="font-semibold text-lg mb-4">Quick Actions</h3>
                 <div className="space-y-3">
+                  {/* <button className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    <BookOpen className="h-5 w-5 mr-2" />
+                    Upload Assignment
+                  </button> */}
                   <button className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
                     <FileText className="h-5 w-5 mr-2" />
-                    View Syllabus
+                    Upload Schedule for class
                   </button>
-                  <button className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    <Users className="h-5 w-5 mr-2" />
-                    View Student Roster
-                  </button>
-                  <button className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    <BookOpen className="h-5 w-5 mr-2" />
-                    Create Assignment
+                  <button className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition" onClick={() => setStudyResourcesModal(true)}>
+                    <FolderPlus className="h-5 w-5 mr-2" />
+                    Upload Class Resources
                   </button>
                 </div>
               </div>
 
-              {/* Important dates */}
-              <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-                <h3 className="font-semibold text-lg mb-4">Important Dates</h3>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Class Start</p>
-                    <p className="font-medium">{formatDate(createdAt)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Class End</p>
-                    <p className="font-medium">{formatDate(expiresAt)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Duration</p>
-                    <p className="font-medium">{classDurationInDays} days</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
