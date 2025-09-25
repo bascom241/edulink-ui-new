@@ -14,6 +14,9 @@ import Classroom from './pages/classroom/Classroom'
 import Classrooms from './pages/classroom/classrooms'
 import ClassroomDetail from './pages/classroom/classroomDetail'
 import Sessions from './pages/sessions/sessions'
+import ManageStudents from './pages/ManageStudents'
+import Profile from './pages/Profile'
+import Notifications from './pages/Notifications'
 function App() {
   const { getUser } = useAuthStore();
 
@@ -39,6 +42,9 @@ function App() {
           <Route path="/create-classroom" element={<ProtectedRoute><Classroom /></ProtectedRoute>} />
           <Route path="/classrooms" element={<ProtectedRoute><Classrooms /></ProtectedRoute>} />
           <Route path='/sessions' element={<ProtectedRoute><Sessions/></ProtectedRoute>}/>
+          <Route path='/manage-students' element={<ProtectedRoute><ManageStudents/></ProtectedRoute>}/>
+          <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+          <Route path='/notifications' element={<ProtectedRoute><Notifications/></ProtectedRoute>}/>
         </Route>
 
 
@@ -48,5 +54,6 @@ function App() {
     </>
   )
 }
+
 
 export default App

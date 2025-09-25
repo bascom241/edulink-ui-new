@@ -28,13 +28,16 @@ interface SessionInterface {
 
     // For Teacher Ui api 
     sessionsAllContainer?: CurrentSession[]
+    singleSessionContainer?: CurrentSession | null 
     creatingSession: boolean,
-    getAllInstructorSessions : (teacherEmail: string) => Promise<void>
+    getAllInstructorSessions: (teacherEmail: string) => Promise<void>
     fetchingAllInstructorSessions?: boolean
+    fetchSingleSession: (teacherEmail: string, sessionId: number) => Promise<void>
+    fetchinSingleInstructorSession: boolean
     getCurrentTeacherSession: (teacherEmail: string) => Promise<void>
     fetchingTeacherCurrentSession: boolean
     currentTeacherSession: CurrentSession[] | null
-    createSession: (userId: number, topic: string, durationInMinutes: number, allowAnyOneToJoin: boolean, sessionPassword:string , requirePassword:boolean, classroomId: number) => Promise<void>
+    createSession: (userId: number, topic: string, durationInMinutes: number, allowAnyOneToJoin: boolean, sessionPassword: string, requirePassword: boolean, classroomId: number) => Promise<void>
 
 
 }
@@ -44,12 +47,14 @@ interface SessionInterface {
 
 
 export const useSessionStore = create<SessionInterface>((set) => ({
+    fetchinSingleInstructorSession: false,
     currentSession: null,
+    singleSessionContainer: null, 
     fetchingCurrentSession: false,
     fetchingTeacherCurrentSession: false,
     currentTeacherSession: null,
     creatingSession: false,
-      fetchingAllInstructorSessions:false,
+    fetchingAllInstructorSessions: false,
     getCurrentSession: async (studentEmail: string) => {
         set({ fetchingCurrentSession: true, error: null });
         try {
@@ -73,29 +78,40 @@ export const useSessionStore = create<SessionInterface>((set) => ({
             // toast.error(error?.message)
         }
     },
-    createSession: async (userId: number, topic: string, durationInMinutes: number, allowAnyoneToJoin: boolean,sessionPassword:string ,  requirePassword:boolean, classroomId: number) => {
-        set({creatingSession:true })
+    createSession: async (userId: number, topic: string, durationInMinutes: number, allowAnyoneToJoin: boolean, sessionPassword: string, requirePassword: boolean, classroomId: number) => {
+        set({ creatingSession: true })
         try {
             const response = await axiosInstance.post(`/sessions/create?userId=${userId}&topic=${topic}&durationInMinutes=${durationInMinutes}&allowAnyoneToJoin=${allowAnyoneToJoin}&sessionPassword=${sessionPassword}&requirePassword=${requirePassword}&classroomId=${classroomId}`)
             console.log(response);
-            set({creatingSession:false})
+            set({ creatingSession: false })
 
         } catch (error) {
-            set({creatingSession:false})
+            set({ creatingSession: false })
             console.log(error)
         }
     },
-    getAllInstructorSessions: async(teacherEmail: string) => {
-        set({fetchingAllInstructorSessions:true})
+    getAllInstructorSessions: async (teacherEmail: string) => {
+        set({ fetchingAllInstructorSessions: true })
         try {
 
             const response = await axiosInstance.get(`/sessions/all-instructor-sessions?teacherEmail=${teacherEmail}`);
-            set({sessionsAllContainer:response.data, fetchingAllInstructorSessions:false})
+            set({ sessionsAllContainer: response.data, fetchingAllInstructorSessions: false })
             console.log(response)
 
         } catch (error) {
-            set({fetchingAllInstructorSessions:false})
+            set({ fetchingAllInstructorSessions: false })
             console.log(error)
+        }
+    },
+    fetchSingleSession: async (teacherEmail: string, sessionId: number) => {
+        set({ fetchinSingleInstructorSession: true })
+        try {
+            const response = await axiosInstance.get(`/sessions/instructor/${sessionId}?teacherEmail=${teacherEmail}`);
+            console.log(response)
+            set({ fetchinSingleInstructorSession: false , singleSessionContainer: response.data})
+        } catch (error) {
+            set({ fetchinSingleInstructorSession: false })
+            console.log(error )
         }
     }
 

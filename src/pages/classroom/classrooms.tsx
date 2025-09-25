@@ -78,12 +78,13 @@ const Classrooms = () => {
                     }}
                     classroomId={selectedClassroomForSession}
                     onCreateSession={handleCreateSession}
+                    user = {user }
                 />
             )}
 
             <section className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                 {instructorClassrooms && instructorClassrooms.length > 0 ? (
-                    instructorClassrooms.map((classroom) => (
+                    instructorClassrooms?.map((classroom) => (
                         <div key={classroom.classId} className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
                             <div className="flex justify-between items-start mb-4">
                                 <h2 className="text-xl font-bold text-gray-800 truncate">{classroom.className}</h2>
@@ -119,15 +120,29 @@ const Classrooms = () => {
                                     <Eye size={16} className="mr-2" />
                                     Details
                                 </button>
-                                <button className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg flex-1 hover:from-blue-600 hover:to-indigo-600 transition-all"
+                                <button
+                                    className="flex items-center justify-center px-4 py-2 
+             bg-gradient-to-r from-blue-500 to-indigo-500 
+             text-white rounded-lg flex-1 
+             hover:from-blue-600 hover:to-indigo-600 
+             transition-all
+             disabled:opacity-50 disabled:cursor-not-allowed"
                                     onClick={() => {
                                         setSelectedClassroomForSession(classroom.classId);
                                         setIsSessionModalOpen(true);
                                     }}
+                                    disabled={classroom?.sessionOngoing == true} // notice '==' here
                                 >
-                                    Start a session
-                                    <ArrowRight size={16} className="ml-2" />
+                                    {
+                                        classroom.sessionOngoing ? "Session Ongoing": "Start Session"
+                                    }
+                                    
+                                    {
+                                        !classroom.sessionOngoing &&   <ArrowRight size={16} className="ml-2" />
+                                    }
+                                  
                                 </button>
+
                             </div>
                         </div>
                     ))

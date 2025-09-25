@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useClassRoomStore } from '../store/useClassRoom';
 import { useSessionStore } from '../store/useSessionStore';
+import type { User } from '../store/useAuthStore';
 import {
   X, Clock, MapPin, Link as LinkIcon, Globe, Users,
   Settings, Shield, AlertCircle, Lock, Eye, EyeOff, Loader
@@ -12,6 +13,7 @@ interface SessionModalProps {
   onClose: () => void;
   classroomId: number;
   onCreateSession: (sessionData: SessionFormData) => void;
+  user: User | null;
 }
 
 export interface SessionFormData {
@@ -25,82 +27,39 @@ export interface SessionFormData {
 }
 
 // Animation variants
-const backdropVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 }
-};
-
-const modalVariants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.8,
-    y: 50
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      type: "spring" as "spring",
-      damping: 25,
-      stiffness: 300,
-      mass: 0.8
-    }
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.8,
-    y: 50,
-    transition: {
-      duration: 0.2
-    }
-  }
-};
-
+const backdropVariants = { hidden: { opacity: 0 }, visible: { opacity: 1 } };
+const modalVariants = { hidden: { opacity: 0, scale: 0.8, y: 50 }, visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring" as "spring", damping: 25, stiffness: 300, mass: 0.8 } }, exit: { opacity: 0, scale: 0.8, y: 50, transition: { duration: 0.2 } } };
 const tabContentVariants = {
   hidden: { opacity: 0, x: 20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.3
-    }
-  },
-  exit: {
-    opacity: 0,
-    x: -20,
-    transition: {
-      duration: 0.2
-    }
-  }
+  visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, x: -20, transition: { duration: 0.2 } }
 };
 
 const SessionModal: React.FC<SessionModalProps> = ({
-  isOpen,
-  onClose,
-  classroomId,
-  onCreateSession
+  isOpen, onClose, classroomId, onCreateSession, user
 }) => {
+  const { fetchSingleClassroom, singleClassroom } = useClassRoomStore();
+  const { creatingSession } = useSessionStore();
+
   const [formData, setFormData] = useState<SessionFormData>({
     topic: '',
     durationInMinutes: 60,
-    allowAnyoneToJoin: false, 
-    sessionClassLink: '',
-    sessionClassLocation: '',
+    allowAnyoneToJoin: false,
+    sessionClassLink: singleClassroom?.classLocation || '',
+    sessionClassLocation: singleClassroom?.classLocation || '',
     requirePassword: false,
     sessionPassword: ''
   });
+
   const [isVirtual, setIsVirtual] = useState(true);
   const [activeTab, setActiveTab] = useState<'basic' | 'security'>('basic');
   const [showPassword, setShowPassword] = useState(false);
 
- const { creatingSession} = useSessionStore()
-
-  const handleSubmit = (e: React.FormEvent) => {
-    console.log("Working")
-    e.preventDefault();
-    onCreateSession(formData);
-  };
+  useEffect(() => {
+    if (user && fetchSingleClassroom) {
+      fetchSingleClassroom(user.email, Number(classroomId));
+    }
+  }, [user, fetchSingleClassroom, classroomId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -112,23 +71,16 @@ const SessionModal: React.FC<SessionModalProps> = ({
     }));
   };
 
-  // Basic Info Tab Content
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onCreateSession(formData);
+  };
+
   const renderBasicInfoTab = () => (
-    <motion.div
-      variants={tabContentVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      key="basic-tab"
-      className="space-y-6"
-    >
-      {/* Topic + Duration in grid */}
+    <motion.div variants={tabContentVariants} initial="hidden" animate="visible" exit="exit" key="basic-tab" className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Topic Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Session Topic
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Session Topic</label>
           <input
             type="text"
             name="topic"
@@ -140,11 +92,8 @@ const SessionModal: React.FC<SessionModalProps> = ({
           />
         </div>
 
-        {/* Duration Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Duration (minutes)
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Duration (minutes)</label>
           <div className="relative">
             <Clock size={18} className="absolute left-3 top-3.5 text-gray-400" />
             <input
@@ -152,8 +101,8 @@ const SessionModal: React.FC<SessionModalProps> = ({
               name="durationInMinutes"
               value={formData.durationInMinutes}
               onChange={handleChange}
-              min="1"
-              max="480"
+              min={1}
+              max={480}
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               required
             />
@@ -162,11 +111,8 @@ const SessionModal: React.FC<SessionModalProps> = ({
         </div>
       </div>
 
-      {/* Session Type Toggle */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Session Type
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-3">Session Type</label>
         <div className="flex bg-gray-100 p-1 rounded-xl">
           <motion.button
             whileHover={{ scale: 1.02 }}
@@ -195,11 +141,29 @@ const SessionModal: React.FC<SessionModalProps> = ({
         </div>
       </div>
 
-      {/* Location/Link Input */}
+ <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
+          <div className="flex items-start">
+            <AlertCircle size={16} className="text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
+            <div>
+              <p className="text-xs font-medium text-blue-800 mb-1">Important Notice</p>
+              <p className="text-xs text-blue-700">
+                {isVirtual
+                  ? "This meeting link is the default link provided when the classroom was created and will be broadcasted to all students. Ensure it is correct before starting the session, as any changes now will update what students see."
+                  : "This location is the default classroom location provided when the classroom was created and will be shared with all students. Verify its accuracy before starting the session, as any edits now will update what students see."
+                }
+              </p>
+
+
+              {singleClassroom?.classLocation && (
+                <p className="text-xs text-blue-700 mt-1">
+                  Classroom default: {singleClassroom.classLocation}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {isVirtual ? 'Meeting Link' : 'Location'}
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">{isVirtual ? 'Meeting Link' : 'Location'}</label>
         <div className="relative">
           {isVirtual ? (
             <>
@@ -227,52 +191,31 @@ const SessionModal: React.FC<SessionModalProps> = ({
             </>
           )}
         </div>
+
+        {/* Location Notice */}
+       
       </div>
     </motion.div>
   );
 
-  // Security Tab Content
   const renderSecurityTab = () => (
-    <motion.div
-      variants={tabContentVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      key="security-tab"
-      className="space-y-6"
-    >
-      {/* Privacy Setting */}
+    <motion.div variants={tabContentVariants} initial="hidden" animate="visible" exit="exit" key="security-tab" className="space-y-6">
       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
         <div className="flex items-center">
           <div className={`p-2 rounded-lg mr-3 ${formData.allowAnyoneToJoin ? 'bg-green-100' : 'bg-blue-100'}`}>
-            {formData.allowAnyoneToJoin ? (
-              <Globe size={18} className="text-green-600" />
-            ) : (
-              <Users size={18} className="text-blue-600" />
-            )}
+            {formData.allowAnyoneToJoin ? <Globe size={18} className="text-green-600" /> : <Users size={18} className="text-blue-600" />}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-800">
-              {formData.allowAnyoneToJoin ? 'Open to everyone' : 'Classroom members only'}
-            </p>
-            <p className="text-xs text-gray-500">
-              {formData.allowAnyoneToJoin ? 'Anyone with the link can join' : 'Only students in this classroom can join'}
-            </p>
+            <p className="text-sm font-medium text-gray-800">{formData.allowAnyoneToJoin ? 'Open to everyone' : 'Classroom members only'}</p>
+            <p className="text-xs text-gray-500">{formData.allowAnyoneToJoin ? 'Anyone with the link can join' : 'Only students in this classroom can join'}</p>
           </div>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            name="allowAnyoneToJoin"
-            checked={formData.allowAnyoneToJoin}
-            onChange={handleChange}
-            className="sr-only peer"
-          />
+          <input type="checkbox" name="allowAnyoneToJoin" checked={formData.allowAnyoneToJoin} onChange={handleChange} className="sr-only peer" />
           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
         </label>
       </div>
 
-      {/* Password Protection */}
       <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
         <div className="flex items-center mb-3">
           <Shield size={18} className="text-blue-500 mr-2" />
@@ -288,47 +231,31 @@ const SessionModal: React.FC<SessionModalProps> = ({
             onChange={handleChange}
             className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <label htmlFor="requirePassword" className="ml-2 block text-sm text-gray-700">
-            Require password to join
-          </label>
+          <label htmlFor="requirePassword" className="ml-2 block text-sm text-gray-700">Require password to join</label>
         </div>
 
         {formData.requirePassword && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            transition={{ duration: 0.3 }}
-            className="mt-3"
-          >
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Session Password
-            </label>
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} transition={{ duration: 0.3 }} className="mt-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Session Password</label>
             <div className="relative">
               <Lock size={18} className="absolute left-3 top-3.5 text-gray-400" />
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 name="sessionPassword"
                 value={formData.sessionPassword}
                 onChange={handleChange}
                 placeholder="Enter a secure password"
                 className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
-              >
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600">
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Use a strong password with letters, numbers, and special characters
-            </p>
+            <p className="text-xs text-gray-500 mt-2">Use a strong password with letters, numbers, and special characters</p>
           </motion.div>
         )}
       </div>
 
-      {/* Security Warning */}
       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
         <div className="flex items-start">
           <AlertCircle size={18} className="text-amber-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -363,7 +290,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
             animate="visible"
             exit="exit"
             className="bg-white rounded-2xl shadow-xl w-full max-w-2xl h-[90vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-100">
@@ -373,17 +300,12 @@ const SessionModal: React.FC<SessionModalProps> = ({
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">Create Secure Session</h2>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={24} />
               </motion.button>
             </div>
 
-            {/* Tab Navigation */}
+            {/* Tabs */}
             <div className="flex border-b border-gray-100">
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -392,8 +314,7 @@ const SessionModal: React.FC<SessionModalProps> = ({
                 onClick={() => setActiveTab('basic')}
                 className={`flex-1 py-4 px-6 text-sm font-medium flex items-center justify-center ${activeTab === 'basic' ? 'text-blue-600 border-b-2 border-blue-500' : 'text-gray-500 hover:text-gray-700'}`}
               >
-                <Settings size={16} className="mr-2" />
-                Basic Info
+                <Settings size={16} className="mr-2" /> Basic Info
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -402,42 +323,39 @@ const SessionModal: React.FC<SessionModalProps> = ({
                 onClick={() => setActiveTab('security')}
                 className={`flex-1 py-4 px-6 text-sm font-medium flex items-center justify-center ${activeTab === 'security' ? 'text-blue-600 border-b-2 border-blue-500' : 'text-gray-500 hover:text-gray-700'}`}
               >
-                <Shield size={16} className="mr-2" />
-                Security
+                <Shield size={16} className="mr-2" /> Security
               </motion.button>
             </div>
 
- <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-y-auto">
-  {/* Scrollable content */}
-  <div className="flex-1 overflow-y-auto p-6 space-y-6">
-    <AnimatePresence mode="wait">
-      {activeTab === 'basic' ? renderBasicInfoTab() : renderSecurityTab()}
-    </AnimatePresence>
-  </div>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <AnimatePresence mode="wait">
+                  {activeTab === 'basic' ? renderBasicInfoTab() : renderSecurityTab()}
+                </AnimatePresence>
+              </div>
 
-  {/* Sticky footer (doesn’t shrink) */}
-  <div className="flex gap-3 p-6 border-t border-gray-100 shrink-0">
-    <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      type="button"
-      onClick={onClose}
-      className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
-    >
-      Cancel
-    </motion.button>
-    <motion.button
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.95 }}
-      type="submit"
-      className="flex items-center justify-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md"
-    >
-      { creatingSession? <Loader className="animate-spin" /> : "Start Secure Session"}
-    </motion.button>
-  </div>
-</form>
-
-
+              {/* Footer */}
+              <div className="flex gap-3 p-6 border-t border-gray-100 shrink-0">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  className="flex items-center justify-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md"
+                >
+                  {creatingSession ? <Loader className="animate-spin" /> : 'Start Secure Session'}
+                </motion.button>
+              </div>
+            </form>
           </motion.div>
         </motion.div>
       )}

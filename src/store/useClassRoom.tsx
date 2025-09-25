@@ -1,6 +1,6 @@
 import axiosInstance from "../lib/axios";
 import { create } from "zustand";
-
+import type { CurrentSession } from "./useSessionStore";
 import toast from "react-hot-toast";
 
 
@@ -10,6 +10,20 @@ export interface ClassMaterial {
     description?: string; // optional
 }
 
+export interface Student {
+    studentId: number;
+    email: string;
+    fullName: string;
+    joinDate?: string;        // ISO date string - optional
+    lastActive?: string;      // ISO date string - optional
+    attendanceRate?: number;  // percentage - optional
+    progress?: number;        // percentage - optional
+    phone?: string;           // optional
+    status?: 'active' | 'inactive' | 'pending'; // optional
+    avatarUrl?: string;       // optional
+
+}
+
 export interface ClassroomResponseDto {
     classId: number;
     className: string;
@@ -17,17 +31,18 @@ export interface ClassroomResponseDto {
     classroomPrice: number;
     classroomFull: boolean;
     classDurationInDays: number;
-    createdAt: string;    // ISO date string
-    expiresAt: string;    // ISO date string
+    createdAt: string;
+    expiresAt: string;
     classDeliveryModel: string;
     classLocation: string;
     targetAudience: string;
     classCategory: string;
-
+    sessionOngoing: boolean;
+    sessions: CurrentSession[];
+    students: Student[];
     resources: ClassMaterial[];
     assignments: ClassMaterial[];
     tasks: ClassMaterial[];
-
     numberOfStudents: number;
     numberOfSessions: number;
     numberOfQuestions: number;
@@ -43,11 +58,13 @@ interface ClassRoomInterface {
     fetchingClassroomsLength?: boolean;
     fetchInstructorClassrooms?: (instructorEmail: string) => Promise<ClassroomResponseDto[]>;
 
-    uploadClassResources: (resources:any, classId:number) => Promise<boolean >
-
+    uploadTasks: (tasks:any , clasId: number | undefined ) => Promise <boolean>
+    uploadingTasks: boolean 
+    uploadClassResources: (resources: any, classId: number | undefined) => Promise<boolean>
+    uploadingResources: boolean
     singleClassroom?: ClassroomResponseDto;
     fetchingSingleClassroom?: boolean;
-        fetchSingleClassroom?: (instructorEmail: string, classId: number) => Promise<ClassroomResponseDto>;
+    fetchSingleClassroom?: (instructorEmail: string, classId: number) => Promise<ClassroomResponseDto>;
 
     classRoomsLength?: number;
     createClassroom: (formData: FormData, userId: number) => Promise<boolean>
@@ -60,15 +77,21 @@ interface ClassRoomInterface {
     fetchStudentClassroomsLength: (studentEmail: string) => Promise<number>;
     fetchingStudentClassroomsLength?: boolean;
     studentClassRoomsLength?: number;
+    myStudentsContainer?: Student[]
+    fetchStudentsInClassrooms?: (teacherEmail: string ) => Promise<void>
 }
 export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
 
+    myStudentsContainer: [],
+    uploadingTasks: false, 
+    uploadingResources: false,
+
     fetchingInviteLink: false,
     instructorClassrooms: [],
-    singleClassroom:undefined,
-    fetchingSingleClassroom:false,
+    singleClassroom: undefined,
+    fetchingSingleClassroom: false,
     fetchingClassrooms: false,
- 
+
     creatingClassroom: false,
     fetchInstructorClassroomsLength: async (instructorEmail: string) => {
         set({ fetchingClassroomsLength: true })
@@ -126,7 +149,7 @@ export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
         try {
             const response = await axiosInstance.get(`/classroom/instructor-classrooms/${instructorEmail}`);
             set({ instructorClassrooms: response.data });
-            set({ fetchingClassrooms:false })
+            set({ fetchingClassrooms: false })
             console.log(response.data)
             return response.data
         } catch (error) {
@@ -135,12 +158,12 @@ export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
             console.log(error)
         }
     },
-    fetchSingleClassroom:async(instructorEmail:string, classId:number) => {
+    fetchSingleClassroom: async (instructorEmail: string, classId: number) => {
         set({ fetchingSingleClassroom: true })
         try {
             const response = await axiosInstance.get(`/classroom/single-instructor-classroom/${classId}?email=${instructorEmail}`);
             set({ singleClassroom: response.data });
-            set({ fetchingSingleClassroom:false })
+            set({ fetchingSingleClassroom: false })
             console.log(response.data)
             return response.data
         } catch (error) {
@@ -149,7 +172,7 @@ export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
             console.log(error)
         }
     },
-     generateInviteLink : async (classId: number) => {
+    generateInviteLink: async (classId: number) => {
         set({ fetchingInviteLink: true });
         try {
             const response = await axiosInstance.get(`/classroom/${classId}/invite`);
@@ -160,32 +183,91 @@ export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
             set({ fetchingInviteLink: false });
             return "";
         }
-     }, 
-uploadClassResources: async (formData, classId) => {
-    try {
-        const response = await axiosInstance.put(
-            `classroom/add-resources/${classId}`, 
-            formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
+    },
+    uploadClassResources: async (formData, classId) => {
+        set({uploadingResources: true})
+        try {
+            // Debug: log what's being sent
+            console.log('Sending form data with parts:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
             }
-        );
 
-        const newResources: ClassMaterial[] = response.data;
-        set((state) => ({
-            singleClassroom: state.singleClassroom
-                ? {
-                    ...state.singleClassroom,
-                    resources: [...state.singleClassroom.resources, ...newResources],
-                }
-                : undefined,
-        }));
-        return true;
-    } catch (error) {
-        console.log(error);
-        return false;
+
+
+            // Make the request to the server
+            const response = await axiosInstance.put(
+                `classroom/add-resources/${classId}`,
+                formData
+            );
+
+         
+            // ge the data the server sends to us
+            const allResources: ClassMaterial[] = response.data;
+
+            // We Replace entirely the data with the updated Data
+            set((state) => ({
+                singleClassroom: state.singleClassroom
+                    ? {
+                        ...state.singleClassroom,
+                        resources: allResources, 
+                    }
+                    : undefined,
+            }));
+            set({uploadingResources: false })
+            return true;
+        } catch (error: any) {
+            console.log('Upload error:', error);
+            if (error.response) {
+                console.log('Error response:', error.response.data);
+                console.log('Error status:', error.response.status);
+            }
+              set({uploadingResources: false })
+            return false;
+        }
+    },
+
+    uploadTasks: async (formData:any, classId:any) => {
+        set({uploadingTasks:true})
+        try {
+
+            // Make the request to the server 
+            const response = await axiosInstance.put(`/classroom/add-task/${classId}`, formData); 
+
+            // lopop through the data for debug 
+            for (let [key,value] of formData){
+                console.log(key, value)
+            }
+
+            const allTasks: ClassMaterial[] = response.data; 
+
+            set((state)=> ({
+                singleClassroom:state.singleClassroom?{
+                    ...state.singleClassroom, 
+                    tasks: allTasks
+                }: undefined
+            }))
+            set({uploadingTasks: false })
+            return true
+        } catch (error: any) {
+            console.log(error)
+            if(error.response){
+                console.log("Error Response:", error.response.data)
+                console.log("Error Status:",error.response.status)
+            }
+            set({uploadingTasks: false })
+            return false
+        }
+    },
+
+    fetchStudentsInClassrooms: async (teacherEmail:string) => {
+        try {
+            const response = await axiosInstance.get(`classroom/my-students?teacherEmail=${teacherEmail}`)
+            console.log(response)
+            set({myStudentsContainer: response.data})
+        } catch (error) {
+            
+            console.log(error)
+        }
     }
-}
 }));

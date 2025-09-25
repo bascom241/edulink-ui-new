@@ -11,7 +11,7 @@ interface Classroom {
   [key: string]: any;
 }
 
-interface User {
+export interface User {
   userId: number;
   firstName: string;
   lastName: string;

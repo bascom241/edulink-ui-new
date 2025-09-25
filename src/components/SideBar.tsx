@@ -44,11 +44,7 @@ const SideBar = () => {
       link: "/classrooms",
       icon: <Building2 size={20} />
     },
-    {
-      title: 'Students',
-      link: "/students",
-      icon: <Users size={20} />
-    },
+
     {
       title: 'Manage Students',
       link: "/manage-students",
