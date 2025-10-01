@@ -67,8 +67,10 @@ export interface AuthState {
     forgotPassword: (email: string) => Promise<boolean>
     resetPassword: (token:string, password:string, confirmPassword:string) => Promise<boolean>
     getUser: () => Promise<void>
+    loadingUser?:boolean
 }
 export const useAuthStore = create<AuthState>((set,get) => ({
+    loadingUser: false ,
     isAuthenticated: false,
     user: null,
     token: null,
@@ -147,16 +149,19 @@ export const useAuthStore = create<AuthState>((set,get) => ({
         }
     },
     getUser: async () =>{
+        set({loadingUser: true})
+        
         try {
          
                 const response = await axiosInstance.post("/auth/user");
-                set({ user: response.data, isAuthenticated: true });
+                set({ user: response.data, isAuthenticated: true , loadingUser: false});
                 toast.success("User data fetched successfully");
                 console.log("User data:", response.data);
                 const user = get().user;    
                 console.log("User:", user);
         } catch (error) {
             console.error("Error fetching user data:", error);
+            set({loadingUser: false})
             toast.error("Failed to fetch user data");
         }
     }

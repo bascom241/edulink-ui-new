@@ -4,7 +4,6 @@ import {
   PlusCircle,
   BookOpen,
   Building2,
-  Users,
   Settings,
   UserCog,
   User,
@@ -17,101 +16,35 @@ import {
 
 import { useAuthStore } from '../store/useAuthStore';
 import { NavLink } from 'react-router-dom';
-
+import { useNotificationStore } from '../store/useNotifications';
 
 const SideBar = () => {
+  const { unreadCount } = useNotificationStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState('Dashboard');
 
   const TeacherDashboardContent = [
-    {
-      title: 'Dashboard',
-      link: "/dashboard",
-      icon: <Home size={20} />
-    },
-    {
-      title: 'Create ClassRoom',
-      link: "/create-classroom",
-      icon: <PlusCircle size={20} />
-    },
-    {
-      title: 'sessions',
-      link: "/sessions",
-      icon: <BookOpen size={20} />
-    },
-    {
-      title: 'My Rooms',
-      link: "/classrooms",
-      icon: <Building2 size={20} />
-    },
-
-    {
-      title: 'Manage Students',
-      link: "/manage-students",
-      icon: <UserCog size={20} />
-    },
-    {
-      title: 'Profile',
-      link: "/profile",
-      icon: <User size={20} />
-    },
-    {
-      title: 'Notifications',
-      link: "/notifications",
-      icon: <Bell size={20} />
-    },
-    {
-      title: 'Settings',
-      link: "/settings",
-      icon: <Settings size={20} />
-    },
+    { title: 'Dashboard', link: "/dashboard", icon: <Home size={20} /> },
+    { title: 'Create ClassRoom', link: "/create-classroom", icon: <PlusCircle size={20} /> },
+    { title: 'sessions', link: "/sessions", icon: <BookOpen size={20} /> },
+    { title: 'My Rooms', link: "/classrooms", icon: <Building2 size={20} /> },
+    { title: 'Manage Students', link: "/manage-students", icon: <UserCog size={20} /> },
+    { title: 'Profile', link: "/profile", icon: <User size={20} /> },
+    { title: 'Notifications', link: "/notifications", icon: <Bell size={20} /> },
+    // { title: 'Settings', link: "/settings", icon: <Settings size={20} /> },
   ];
 
   const studentDashboardContent = [
-    {
-      title: 'Dashboard',
-      link: "/dashboard",
-      icon: <Home size={20} />
-    },
-    {
-      title: 'My Classes',
-      link: "/my-classes",
-      icon: <Building2 size={20} />
-    },
-    {
-      title: 'Join a Class',
-      link: "/join-class",
-      icon: <PlusCircle size={20} />
-    },
-    {
-      title: 'My Sessions',
-      link: "/my-sessions",
-      icon: <BookOpen size={20} />
-    },
-    {
-      title: 'Profile',
-      link: "/profile",
-      icon: <User size={20} />
-    },
-    {
-      title: 'Notifications',
-      link: "/notifications",
-      icon: <Bell size={20} />
-    },
-    {
-      title: 'Settings',
-      link: "/settings",
-      icon: <Settings size={20} />
-    },
+    { title: 'Dashboard', link: "/dashboard", icon: <Home size={20} /> },
+    { title: 'My Classes', link: "/my-classes", icon: <Building2 size={20} /> },
+    { title: 'Join a Class', link: "/join-class", icon: <PlusCircle size={20} /> },
+    { title: 'My Sessions', link: "/my-sessions", icon: <BookOpen size={20} /> },
+    { title: 'Profile', link: "/profile", icon: <User size={20} /> },
+    { title: 'Notifications', link: "/notifications", icon: <Bell size={20} /> },
+    // { title: 'Settings', link: "/settings", icon: <Settings size={20} /> },
   ];
 
   const { user } = useAuthStore();
   const dashBoardContent = user?.teacher ? TeacherDashboardContent : studentDashboardContent;
-
-
-  const changeActiveItem = (itemTitle: string) => {
-    setActiveItem(itemTitle);
-  }
 
   return (
     <>
@@ -134,18 +67,17 @@ const SideBar = () => {
       )}
 
       <aside className={`
-        fixed lg:sticky top-0 left-0 
-        flex flex-col justify-between 
-        w-80 lg:w-72 h-screen 
+        fixed lg:sticky top-0 left-0
+        flex flex-col justify-between
+        w-80 lg:w-72 h-screen
         bg-gradient-to-b from-green-600 to-green-700
-        p-6 
+        p-6
         shadow-2xl
         z-50
         transition-all duration-300 ease-in-out
         ${isCollapsed ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         glass-morphism
       `}>
-
         {/* Toggle button for desktop */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -162,10 +94,8 @@ const SideBar = () => {
             </div>
             <h1 className="text-white text-xl font-bold">EduLink</h1>
           </div>
-          {
-            user?.teacher ? (<p className='text-green-100 text-sm'>Teacher's Space</p>) : (<p className="text-green-100 text-sm">Student's Space</p>)
-          }
-
+          {user?.teacher && <p className='text-green-100 text-sm'>Teacher's Space</p>}
+          {user?.student && <p className='text-green-100 text-sm'>Student's Space</p>}
         </div>
 
         {/* Navigation Items */}
@@ -176,25 +106,27 @@ const SideBar = () => {
                 <NavLink
                   to={item.link}
                   className={({ isActive }) =>
-                    `flex items-center space-x-3 p-3 
-             transition-all duration-300 rounded-xl cursor-pointer
-             ${isActive
-                      ? "bg-white text-green-700 shadow-lg"
-                      : "text-white hover:bg-green-500 hover:shadow-md"
-                    }`
+                    `flex items-center space-x-3 p-3
+                     transition-all duration-300 rounded-xl cursor-pointer
+                     ${isActive
+                        ? "bg-white text-green-700 shadow-lg"
+                        : "text-white hover:bg-green-500 hover:shadow-md"
+                     }`
                   }
                 >
-                  {({ isActive }) => (
-                    <>
-                      <span className={isActive ? "text-green-700" : "text-white"}>
-                        {item.icon}
-                      </span>
-                      <span className="font-medium">{item.title}</span>
-                      {isActive && (
-                        <div className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      )}
-                    </>
-                  )}
+                  <span className="flex items-center space-x-3 relative">
+                    {/* Icon with badge for Notifications */}
+                    <div className="relative">
+                      {item.icon}
+                      {item.title === "Notifications"  ?  unreadCount > 0 && (
+                        <span className="absolute -top-2 -right-2 min-w-[16px] h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center px-[2px]">
+                          {unreadCount}
+                        </span>
+                      ): ""}
+                    </div>
+
+                    <span className="font-medium">{item.title}</span>
+                  </span>
                 </NavLink>
               </li>
             ))}

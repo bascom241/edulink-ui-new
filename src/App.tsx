@@ -1,4 +1,3 @@
-
 import { Route, Routes } from 'react-router-dom'
 import SignIn from './pages/auth/SignIn'
 import Layout from './components/Layout'
@@ -17,6 +16,9 @@ import Sessions from './pages/sessions/sessions'
 import ManageStudents from './pages/ManageStudents'
 import Profile from './pages/Profile'
 import Notifications from './pages/Notifications'
+
+
+
 function App() {
   const { getUser } = useAuthStore();
 
@@ -28,10 +30,13 @@ function App() {
     <>
       <Toaster position='bottom-right' reverseOrder={false} />
 
-
-
-
       <Routes>
+        {/* Redirect root to external landing page */}
+        <Route
+          path="/"
+        
+        />
+
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
@@ -41,19 +46,14 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/create-classroom" element={<ProtectedRoute><Classroom /></ProtectedRoute>} />
           <Route path="/classrooms" element={<ProtectedRoute><Classrooms /></ProtectedRoute>} />
-          <Route path='/sessions' element={<ProtectedRoute><Sessions/></ProtectedRoute>}/>
-          <Route path='/manage-students' element={<ProtectedRoute><ManageStudents/></ProtectedRoute>}/>
-          <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
-          <Route path='/notifications' element={<ProtectedRoute><Notifications/></ProtectedRoute>}/>
+          <Route path='/sessions' element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
+          <Route path='/manage-students' element={<ProtectedRoute><ManageStudents /></ProtectedRoute>} />
+          <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path='/notifications' element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         </Route>
-
-
       </Routes>
-
-
     </>
   )
 }
-
 
 export default App

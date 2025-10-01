@@ -24,9 +24,7 @@ const ManageStudents: React.FC = () => {
   useEffect(() => {
     if (user?.email && fetchStudentsInClassrooms) {
       fetchStudentsInClassrooms(user.email);
-    } else {
-      toast.error("Error Fetching Students");
-    }
+    } 
   }, [user, fetchStudentsInClassrooms]);
 
 
@@ -51,7 +49,7 @@ const ManageStudents: React.FC = () => {
       if (sortBy === "progress") return  (b.progress ?? 0)  - (a.progress ?? 0);
       if (sortBy === "status") return (a.status ?? "inactive").localeCompare(b.status ?? "inactive");
       return 0;
-    });
+    });  
 
   // Handle editing a student
   const handleEditStudent = (student: Student) => {

@@ -266,7 +266,6 @@ export const useClassRoomStore = create<ClassRoomInterface>((set) => ({
             console.log(response)
             set({myStudentsContainer: response.data})
         } catch (error) {
-            
             console.log(error)
         }
     }
