@@ -105,7 +105,7 @@ const CurrentClass = () => {
 
                     <div className='text-right'>
                         <p className='text-gray-500 text-sm'>Instructor</p>
-                        <p className='font-medium text-gray-800'>{sessionToDisplay ? `${sessionToDisplay.creatorFirstName} ${sessionToDisplay.creatorLastName}` : "Unknown"}</p>
+                        <p className='font-medium text-gray-800'>{sessionToDisplay ? `${sessionToDisplay.creatorFirstName} ${sessionToDisplay.creatorLastName}` : ""}</p>
                     </div>
                 </div>
 

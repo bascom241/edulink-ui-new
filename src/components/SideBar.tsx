@@ -15,8 +15,9 @@ import {
 } from 'lucide-react';
 
 import { useAuthStore } from '../store/useAuthStore';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useNotificationStore } from '../store/useNotifications';
+import toast from 'react-hot-toast';
 
 const SideBar = () => {
   const { unreadCount } = useNotificationStore();
@@ -43,9 +44,23 @@ const SideBar = () => {
     // { title: 'Settings', link: "/settings", icon: <Settings size={20} /> },
   ];
 
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const dashBoardContent = user?.teacher ? TeacherDashboardContent : studentDashboardContent;
 
+
+  const navigate = useNavigate()
+  const handleUserLogout = async () => {
+    if (logout) {
+      const result = await logout();
+      if(result.success){
+        toast.success(result.data)
+        navigate("/login")
+      }else {
+        toast.error(result.data)
+      }
+    }
+
+  }
   return (
     <>
       {/* Mobile Menu Button */}
@@ -109,20 +124,20 @@ const SideBar = () => {
                     `flex items-center space-x-3 p-3
                      transition-all duration-300 rounded-xl cursor-pointer
                      ${isActive
-                        ? "bg-white text-green-700 shadow-lg"
-                        : "text-white hover:bg-green-500 hover:shadow-md"
-                     }`
+                      ? "bg-white text-green-700 shadow-lg"
+                      : "text-white hover:bg-green-500 hover:shadow-md"
+                    }`
                   }
                 >
                   <span className="flex items-center space-x-3 relative">
                     {/* Icon with badge for Notifications */}
                     <div className="relative">
                       {item.icon}
-                      {item.title === "Notifications"  ?  unreadCount > 0 && (
+                      {item.title === "Notifications" ? unreadCount > 0 && (
                         <span className="absolute -top-2 -right-2 min-w-[16px] h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center px-[2px]">
                           {unreadCount}
                         </span>
-                      ): ""}
+                      ) : ""}
                     </div>
 
                     <span className="font-medium">{item.title}</span>
@@ -140,8 +155,13 @@ const SideBar = () => {
               <User className="text-green-600" size={20} />
             </div>
             <div>
-              <p className="text-white font-medium">John Doe</p>
-              <p className="text-green-100 text-sm">Professor</p>
+              <p className="text-white font-medium">{user?.firstName}</p>
+              {
+                user && user.teacher ? 
+                <p className="text-green-100 text-sm">Teacher</p>:
+                 <p className="text-green-100 text-sm">Student</p>
+              }
+              
             </div>
           </div>
 
@@ -150,7 +170,9 @@ const SideBar = () => {
             text-white rounded-xl 
             hover:bg-green-500 
             transition-colors
-          ">
+          "
+          onClick={handleUserLogout}
+          >
             <LogOut size={20} />
             <span>Logout</span>
           </button>

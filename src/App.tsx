@@ -16,7 +16,7 @@ import Sessions from './pages/sessions/sessions'
 import ManageStudents from './pages/ManageStudents'
 import Profile from './pages/Profile'
 import Notifications from './pages/Notifications'
-
+import AllstudentSessions from './pages/studentSessions/all-studentSessions'
 
 
 function App() {
@@ -43,6 +43,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route element={<Layout />}>
+           {/* Teachers Dashboard  */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/create-classroom" element={<ProtectedRoute><Classroom /></ProtectedRoute>} />
           <Route path="/classrooms" element={<ProtectedRoute><Classrooms /></ProtectedRoute>} />
@@ -50,6 +51,9 @@ function App() {
           <Route path='/manage-students' element={<ProtectedRoute><ManageStudents /></ProtectedRoute>} />
           <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path='/notifications' element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+          
+          {/* Students Dashboard  */}
+          <Route path='/my-sessions' element={<ProtectedRoute> <AllstudentSessions/></ProtectedRoute>}/>
         </Route>
       </Routes>
     </>

@@ -7,46 +7,46 @@ import toast from 'react-hot-toast';
 
 
 interface Classroom {
-  // Define classroom structure properly if you know it
-  [key: string]: any;
+    // Define classroom structure properly if you know it
+    [key: string]: any;
 }
 
 export interface User {
-  userId: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  confirmPassword: string;
-  role: string;
-  shortBio: string;
-  socialLink: string;
-  student: boolean;
-  teacher: boolean;
-  teachingLevel: string;
-  teachingSubjects: string[];
-  yearsOfExperience: number;
+    userId: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    confirmPassword: string;
+    role: string;
+    shortBio: string;
+    socialLink: string;
+    student: boolean;
+    teacher: boolean;
+    teachingLevel: string;
+    teachingSubjects: string[];
+    yearsOfExperience: number;
 
-  bankAccount: string;
-  bankCode: string;
-  bankName: string;
+    bankAccount: string;
+    bankCode: string;
+    bankName: string;
 
-  certificateImageName: string;
-  certificateImageType: string | null;
-  certificateUrl: string;
+    certificateImageName: string;
+    certificateImageType: string | null;
+    certificateUrl: string;
 
-  governmentIdImageName: string;
-  governmentIdImageType: string | null;
-  governmentIdUrl: string;
+    governmentIdImageName: string;
+    governmentIdImageType: string | null;
+    governmentIdUrl: string;
 
-  classrooms: Classroom[];
-  orders: any[]; 
+    classrooms: Classroom[];
+    orders: any[];
 
-  sctaPoints: number;
-  noOfSessions: number;
-  token: string | null;
-  tokenExpiry: string | null;
+    sctaPoints: number;
+    noOfSessions: number;
+    token: string | null;
+    tokenExpiry: string | null;
 }
 
 
@@ -65,20 +65,21 @@ export interface AuthState {
     login: (formData: { email: string; password: string }) => Promise<boolean>;
     registerUser: (FormData: any) => Promise<void>
     forgotPassword: (email: string) => Promise<boolean>
-    resetPassword: (token:string, password:string, confirmPassword:string) => Promise<boolean>
+    resetPassword: (token: string, password: string, confirmPassword: string) => Promise<boolean>
     getUser: () => Promise<void>
-    loadingUser?:boolean
+    loadingUser?: boolean
+    logout?: () => Promise<{success: boolean , data : string  }>
 }
-export const useAuthStore = create<AuthState>((set,get) => ({
-    loadingUser: false ,
+export const useAuthStore = create<AuthState>((set, get) => ({
+    loadingUser: false,
     isAuthenticated: false,
     user: null,
     token: null,
     loggingIn: false,
     error: null,
-    isRegistering : false,
-    forgetingPassword:false,
-    resetingPassword:false,
+    isRegistering: false,
+    forgetingPassword: false,
+    resetingPassword: false,
 
     login: async (formData: { email: string; password: string }) => {
         console.log("Logging in with data:", formData);
@@ -99,70 +100,85 @@ export const useAuthStore = create<AuthState>((set,get) => ({
             return false
         } finally {
             set({ loggingIn: false });
-            
+
+        }
+    },
+    logout: async () => {
+        try {
+            const response = await axiosInstance.post("/auth/logout");
+            localStorage.removeItem(authKey)
+            set({ isAuthenticated: false, user: null, token: null });
+            return { success: true, data: response.data }
+
+        } catch (error: any) {
+            return {
+                success: false,
+             data: error.response?.data || "Logout failed"
+            };
         }
     },
     registerUser: async (formData: any) => {
-        set({isRegistering:true})
+        set({ isRegistering: true })
         try {
             const response = await axiosInstance.post("/auth/register", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             });
-            set({isRegistering:false})
+            set({ isRegistering: false })
             console.log(response)
         } catch (error) {
             if (error instanceof Error) {
                 console.log((error as any)?.response.data);
             }
-            set({isRegistering:false})
+            set({ isRegistering: false })
         }
     },
 
-    forgotPassword:async (email)=>{
-        set({forgetingPassword:true})
+    forgotPassword: async (email) => {
+        set({ forgetingPassword: true })
         try {
-            await axiosInstance.post("/auth/forgot-password", {email},{
-                headers:{
-                    "Content-Type":"application/json"
+            await axiosInstance.post("/auth/forgot-password", { email }, {
+                headers: {
+                    "Content-Type": "application/json"
                 }
             });
-            set({forgetingPassword:false})
+            set({ forgetingPassword: false })
             return true
         } catch (error) {
-            set({forgetingPassword:false})
+            set({ forgetingPassword: false })
             return false
         }
     },
 
-    resetPassword: async (token,password, confirmPassword) => {
-        set({resetingPassword:true})
+    resetPassword: async (token, password, confirmPassword) => {
+        set({ resetingPassword: true })
         try {
-            await axiosInstance.post(`auth/reset-password?token=${token}` , {password, confirmPassword})
-            set({resetingPassword:false})
+            await axiosInstance.post(`auth/reset-password?token=${token}`, { password, confirmPassword })
+            set({ resetingPassword: false })
             return true
         } catch (error) {
-            set({resetingPassword:false})
+            set({ resetingPassword: false })
             console.log(error)
             return false
         }
     },
-    getUser: async () =>{
-        set({loadingUser: true})
-        
+    getUser: async () => {
+        set({ loadingUser: true })
+
         try {
-         
-                const response = await axiosInstance.post("/auth/user");
-                set({ user: response.data, isAuthenticated: true , loadingUser: false});
-                toast.success("User data fetched successfully");
-                console.log("User data:", response.data);
-                const user = get().user;    
-                console.log("User:", user);
+
+            const response = await axiosInstance.post("/auth/user");
+            set({ user: response.data, isAuthenticated: true, loadingUser: false });
+            toast.success("User data fetched successfully");
+            console.log("User data:", response.data);
+            const user = get().user;
+            console.log("User:", user);
         } catch (error) {
             console.error("Error fetching user data:", error);
-            set({loadingUser: false})
+            set({ loadingUser: false })
             toast.error("Failed to fetch user data");
         }
     }
+
 }))
