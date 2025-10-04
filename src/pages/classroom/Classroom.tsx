@@ -46,7 +46,7 @@ const Classroom = () => {
     className: formData.className,
     classCategory: formData.classCategory,
     targetAudience: formData.targetAudience,
-    price: formData.price,
+    classroomPrice: formData.price,
     duration: formData.duration,
     classDeliveryModel: formData.classDeliveryModel,
     classLocation: formData.classLocation,

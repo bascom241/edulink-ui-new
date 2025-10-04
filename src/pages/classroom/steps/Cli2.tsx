@@ -1,4 +1,4 @@
-import { useState } from 'react'
+
 
 const Cli2 = ({ formData, setFormData }: any) => {
 
@@ -8,6 +8,8 @@ const Cli2 = ({ formData, setFormData }: any) => {
       ...prev,
       [name]: value
     }));
+
+    console.log(formData)
   };
 
   return (

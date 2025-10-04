@@ -99,7 +99,7 @@ const ForgotPassword = () => {
           {/* Back to Login Link */}
           <div className="text-center text-sm text-gray-600 pt-4">
             Remember your password?{' '}
-            <Link to="/signin" className="font-medium text-green-600 hover:text-green-500">
+            <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
               Sign in
             </Link>
           </div>
