@@ -36,8 +36,8 @@ const SideBar = () => {
 
   const studentDashboardContent = [
     { title: 'Dashboard', link: "/dashboard", icon: <Home size={20} /> },
-    { title: 'My Classes', link: "/my-classes", icon: <Building2 size={20} /> },
-    { title: 'Join a Class', link: "/join-class", icon: <PlusCircle size={20} /> },
+    { title: 'Join a Class', link: "/my-classes", icon: < PlusCircle size={20} /> },
+    { title: 'My Classes ', link: "/personal-classes", icon: <Building2 size={20} /> },
     { title: 'My Sessions', link: "/my-sessions", icon: <BookOpen size={20} /> },
     { title: 'Profile', link: "/profile", icon: <User size={20} /> },
     { title: 'Notifications', link: "/notifications", icon: <Bell size={20} /> },

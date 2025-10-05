@@ -14,12 +14,17 @@ import {
 import { StatCard } from "./StudentStartCard";
 import { ActivityCard } from "./ActivityCard";
 import { motion } from "framer-motion"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import JoinClassModal from "../models/JoinClassModal";
-export const ClassroomCard = ({ classroom, onChat }: { classroom: any; onChat: (c: any) => void }) => {
+import { useClassRoomStore } from "../store/useClassRoom";
+import ClassroomDetail from "../pages/studentClassrooms/ClassroomDetail";
+import ComingSoon from "../components/skeletons/ComingSoon";
+export const ClassroomCard = ({ classroom, onChat, onViewDetail }: { classroom: any; onChat: (c: any) => void; onViewDetail: () => void; }) => {
 
 
-  const [showJoinModal, setShowJoinModal]  = useState(false)
+
+
+  const [showJoinModal, setShowJoinModal] = useState(false)
 
 
   const handleOpenJoinModal = () => {
@@ -30,6 +35,18 @@ export const ClassroomCard = ({ classroom, onChat }: { classroom: any; onChat: (
   const handleCloseJoinModal = () => {
     setShowJoinModal(false)
   }
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -39,10 +56,10 @@ export const ClassroomCard = ({ classroom, onChat }: { classroom: any; onChat: (
     >
 
       {
-          showJoinModal && <JoinClassModal
+        showJoinModal && <JoinClassModal
           classroom={classroom}
           handleCloseJoinModal={handleCloseJoinModal}
-          />
+        />
       }
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-3xl p-6 border-b border-gray-100">
@@ -59,8 +76,8 @@ export const ClassroomCard = ({ classroom, onChat }: { classroom: any; onChat: (
           </div>
           <span
             className={`inline-flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full shadow-sm border ${classroom.classroomPrice > 0
-                ? "bg-red-50 text-red-700 border-red-200"
-                : "bg-green-50 text-green-700 border-green-200"
+              ? "bg-red-50 text-red-700 border-red-200"
+              : "bg-green-50 text-green-700 border-green-200"
               }`}
           >
             {classroom.classroomPrice > 0 ? (
@@ -94,8 +111,8 @@ export const ClassroomCard = ({ classroom, onChat }: { classroom: any; onChat: (
 
           <span
             className={`px-4 py-2 text-sm font-semibold rounded-full ${classroom.classroomFull
-                ? "bg-red-100 text-red-700"
-                : "bg-green-100 text-green-700"
+              ? "bg-red-100 text-red-700"
+              : "bg-green-100 text-green-700"
               }`}
           >
             {classroom.classroomFull ? "Full" : "Open"}
@@ -106,7 +123,7 @@ export const ClassroomCard = ({ classroom, onChat }: { classroom: any; onChat: (
         <div className="flex items-center justify-between bg-white rounded-2xl p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <img
-              src={`https://i.pravatar.cc/50?u=${classroom.instructorId}`}
+              src={``}
               alt="Instructor"
               className="w-10 h-10 rounded-full border-2 border-blue-200"
             />
@@ -140,22 +157,23 @@ export const ClassroomCard = ({ classroom, onChat }: { classroom: any; onChat: (
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-semibold text-gray-700">Live Activity</span>
+            <span className="">Coming soon</span>
           </div>
-          <ActivityCard name="Jane Doe" text="loved today's session" time="2 min ago" />
-          <ActivityCard name="Michael" text="asked about practice materials" time="5 min ago" />
-          <button className="flex items-center gap-2 text-sm text-blue-500 mt-3">
-            <MessageCircle size={16} />
-            View all activities
-          </button>
+          <ComingSoon
+            title="Live Activity Coming Soon"
+            subtitle="You'll soon see real-time updates from your classroom here!"
+          />
         </div>
 
         {/* Actions */}
         <div className="flex gap-3">
-          <button className="flex items-center justify-center gap-2 px-6 py-3 bg-white border rounded-xl flex-1 hover:bg-gray-50">
+          <button className="flex items-center justify-center gap-2 px-6 py-3 bg-white border rounded-xl flex-1 hover:bg-gray-50"
+            onClick={onViewDetail}
+          >
             <Eye size={18} /> View Details
           </button>
           <button
-            onClick={ handleOpenJoinModal}
+            onClick={handleOpenJoinModal}
             className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl flex-1 hover:from-blue-600 hover:to-indigo-600 disabled:opacity-50"
             disabled={classroom.classroomFull}
           >

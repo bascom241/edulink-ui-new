@@ -6,9 +6,10 @@ import { TaskCard } from "./TaskCard";
 export const ContentTab: React.FC<{ 
   resources: any[]; 
   tasks: any[];
-  onAddResource: () => void;
-  onAddTask: () => void;
-}> = ({ resources, tasks, onAddResource, onAddTask }) => {
+  onAddResource?: () => void;
+  onAddTask?: () => void;
+    readOnly?: boolean;
+}> = ({ resources, tasks, onAddResource, onAddTask ,readOnly= false }) => {
   const [activeContentTab, setActiveContentTab] = useState<'resources' | 'tasks'>('resources');
 
   const handleDownload = (fileUrl: string, fileName: string) => {

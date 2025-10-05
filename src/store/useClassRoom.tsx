@@ -94,7 +94,7 @@ interface ClassRoomInterface {
         amount: number,
         email: string,
         fullName: string
-    ) => Promise<void>
+    ) => Promise<boolean>
 
     joiningClassroom?: boolean
    
@@ -360,9 +360,13 @@ export const useClassRoomStore = create<ClassRoomInterface>((set, get) => ({
             console.log(response)
             set({ joiningClassroom: false })
             window.location.href = response.data.authUrl;
-
-        } catch (error) {
+            return true
+        } catch (error: any) {
             set({ joiningClassroom: false })
+            toast.error(error.response.data)
+           return false 
+        
+           
         }
     }
 }));

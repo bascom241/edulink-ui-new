@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import type { ClassroomResponseDto } from "../store/useClassRoom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 interface JoinModalInterface {
   classroom: ClassroomResponseDto;
@@ -17,7 +18,7 @@ const JoinClassModal = ({ classroom, handleCloseJoinModal }: JoinModalInterface)
   const { joinClassroom, joiningClassroom } = useClassRoomStore();
 
   const handleJoin = async () => {
-    await joinClassroom(
+   const success =   await joinClassroom(
       classroom.classId,
       classroom.instructorId,
       classroom.classroomOwnerEmail,
@@ -25,6 +26,9 @@ const JoinClassModal = ({ classroom, handleCloseJoinModal }: JoinModalInterface)
       email,
       fullName
     );
+
+
+   
   };
 
   return (
