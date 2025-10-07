@@ -49,7 +49,7 @@ export interface ClassroomResponseDto {
     numberOfQuestions: number;
     classroomOwnerFirstName: string
     instructorId: number
-    classroomOwnerEmail: string 
+    classroomOwnerEmail: string
 
     // todo 
     rating: number
@@ -97,7 +97,7 @@ interface ClassRoomInterface {
     ) => Promise<boolean>
 
     joiningClassroom?: boolean
-   
+
     studentsClassrooms?: ClassroomResponseDto[]
     fetchAllCassrooms?: () => Promise<void>
     loadMore: () => void
@@ -105,10 +105,17 @@ interface ClassRoomInterface {
     hasMore?: boolean
     page?: number
 
+    getStudentClassroooms: (email: string) => Promise<void>
+    fetchingStudentClassrooms?: boolean
+    studentClassroomContainer: ClassroomResponseDto[]
+
+
 }
 export const useClassRoomStore = create<ClassRoomInterface>((set, get) => ({
 
     // Student states 
+    fetchingStudentClassrooms: false,
+     studentClassroomContainer: [],
     page: 0,
     loadingAllClassrooms: false,
     hasMore: true,
@@ -343,7 +350,7 @@ export const useClassRoomStore = create<ClassRoomInterface>((set, get) => ({
     },
     joinClassroom: async (classroomId, ownerId, teacherEmail, amount, email, fullName) => {
         set({ joiningClassroom: true })
-        console.log(amount,email,fullName)
+        console.log(amount, email, fullName)
         try {
             const response = await axiosInstance.post(`/classroom/join/${classroomId}/${ownerId}`,
                 {
@@ -364,9 +371,25 @@ export const useClassRoomStore = create<ClassRoomInterface>((set, get) => ({
         } catch (error: any) {
             set({ joiningClassroom: false })
             toast.error(error.response.data)
-           return false 
-        
-           
+            return false
+
+
+        }
+    },
+    getStudentClassroooms: async (email) => {
+        set({ fetchingStudentClassrooms: true });
+        try {
+            const response = await axiosInstance.get("/classroom/student", {
+                params: {
+                    email
+                }
+            });
+            console.log(response)
+            set({ fetchingStudentClassrooms: false, studentClassroomContainer: response.data});
+            
+        } catch (error: any) {
+            set({ fetchingStudentClassrooms: false });
+            toast.error(error?.response.data)
         }
     }
 }));

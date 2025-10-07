@@ -39,7 +39,7 @@ const SideBar = () => {
     { title: 'Join a Class', link: "/my-classes", icon: < PlusCircle size={20} /> },
     { title: 'My Classes ', link: "/personal-classes", icon: <Building2 size={20} /> },
     { title: 'My Sessions', link: "/my-sessions", icon: <BookOpen size={20} /> },
-    { title: 'Profile', link: "/profile", icon: <User size={20} /> },
+    { title: 'Profile', link: "/my-profile", icon: <User size={20} /> },
     { title: 'Notifications', link: "/notifications", icon: <Bell size={20} /> },
     // { title: 'Settings', link: "/settings", icon: <Settings size={20} /> },
   ];

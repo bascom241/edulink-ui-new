@@ -24,11 +24,15 @@ interface SessionInterface {
     fetchingCurrentSession: boolean;
     error?: string | null;
 
+    getAllStudentSessions: (studentEmail: string) => Promise<void>
+    allStudentSessionsContainer: CurrentSession[]
+    fetchingStudentSessions: boolean
+
 
 
     // For Teacher Ui api 
     sessionsAllContainer?: CurrentSession[]
-    singleSessionContainer?: CurrentSession | null 
+    singleSessionContainer?: CurrentSession | null
     creatingSession: boolean,
     getAllInstructorSessions: (teacherEmail: string) => Promise<void>
     fetchingAllInstructorSessions?: boolean
@@ -49,12 +53,28 @@ interface SessionInterface {
 export const useSessionStore = create<SessionInterface>((set) => ({
     fetchinSingleInstructorSession: false,
     currentSession: null,
-    singleSessionContainer: null, 
+    singleSessionContainer: null,
     fetchingCurrentSession: false,
     fetchingTeacherCurrentSession: false,
     currentTeacherSession: null,
     creatingSession: false,
     fetchingAllInstructorSessions: false,
+    allStudentSessionsContainer: [],
+    fetchingStudentSessions: false,
+
+
+    getAllStudentSessions: async (studentEmail: string) =>{
+     set({ fetchingStudentSessions: true});
+        try {
+            const response = await axiosInstance.get(`/sessions/sessions?studentEmail=${studentEmail}`);
+            set({ singleSessionContainer: response.data, fetchingStudentSessions: false });
+        } catch (error) {
+            console.error("Error fetching current session:", error);
+            set({ error: "Failed to fetch current session", fetchingStudentSessions: false });
+        }
+    },
+   
+
     getCurrentSession: async (studentEmail: string) => {
         set({ fetchingCurrentSession: true, error: null });
         try {
@@ -108,10 +128,10 @@ export const useSessionStore = create<SessionInterface>((set) => ({
         try {
             const response = await axiosInstance.get(`/sessions/instructor/${sessionId}?teacherEmail=${teacherEmail}`);
             console.log(response)
-            set({ fetchinSingleInstructorSession: false , singleSessionContainer: response.data})
+            set({ fetchinSingleInstructorSession: false, singleSessionContainer: response.data })
         } catch (error) {
             set({ fetchinSingleInstructorSession: false })
-            console.log(error )
+            console.log(error)
         }
     }
 

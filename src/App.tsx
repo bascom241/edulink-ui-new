@@ -20,6 +20,7 @@ import AllstudentSessions from './pages/studentSessions/all-studentSessions'
 import StudentClassrooms from './pages/studentClassrooms/classrooms'
 import PaymentSucces from './pages/payments/PaymentSucces'
 import MyClasses from './pages/studentClassrooms/MyClasses'
+import StudentProfile from './pages/StudentProfile'
 function App() {
   const { getUser } = useAuthStore();
 
@@ -57,6 +58,7 @@ function App() {
           <Route path='/my-sessions' element={<ProtectedRoute> <AllstudentSessions /></ProtectedRoute>} />
           <Route path='/my-classes' element={<ProtectedRoute><StudentClassrooms /></ProtectedRoute>} />
           <Route path='/personal-classes' element={<ProtectedRoute><MyClasses/></ProtectedRoute>}/>
+          <Route path='/my-profile' element={<ProtectedRoute><StudentProfile/></ProtectedRoute>}/>
         </Route>
       </Routes>
     </>
