@@ -264,6 +264,7 @@ const ClassroomChart: React.FC<{ classroom: Classroom }> = ({ classroom }) => {
                 ))}
               </Pie>
               <Tooltip 
+              
                 contentStyle={{ 
                   borderRadius: '8px', 
                   border: '1px solid #E5E7EB',
