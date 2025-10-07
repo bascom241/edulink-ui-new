@@ -1,4 +1,4 @@
-import React from "react";
+
 
 /**
  * Lucide-style Naira (₦) icon component

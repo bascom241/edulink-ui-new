@@ -25,7 +25,7 @@ interface WalletStore {
     fetchUserWallet: (userId: number) => Promise<void>
     userWallet?: UserWallet | null
 }
-export const useWalletStore = create<WalletStore>((set, get) => ({
+export const useWalletStore = create<WalletStore>((set) => ({
     fethcingUserWallet: false,
     userWallet: null,
     fetchUserWallet: async (userId) => {

@@ -10,8 +10,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  AreaChart,
-  Area,
+
   LineChart,
   Line,
   CartesianGrid
@@ -42,11 +41,7 @@ interface Classroom {
 
 const ClassroomChart: React.FC<{ classroom: Classroom }> = ({ classroom }) => {
   // Calculate metrics based on provided data
-  const totalResources = classroom.resources?.length || 0;
-  const totalTasks = classroom.tasks?.length || 0;
-  const totalStudents = classroom.numberOfStudents || 0;
-  const totalSessions = classroom.numberOfSessions || 0;
-  
+
   // Calculate session completion percentage
   const sessionCompletion = Math.min(100, Math.round((classroom.numberOfSessions / 16) * 100));
   
@@ -213,7 +208,7 @@ const ClassroomChart: React.FC<{ classroom: Classroom }> = ({ classroom }) => {
                 label
                 labelLine={false}
               >
-                {pieData.map((entry, index) => (
+                {pieData.map(( index:any) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -264,7 +259,7 @@ const ClassroomChart: React.FC<{ classroom: Classroom }> = ({ classroom }) => {
                 label
                 labelLine={false}
               >
-                {resourceData.map((entry, index) => (
+                {resourceData.map(( index:any) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

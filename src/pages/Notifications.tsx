@@ -15,6 +15,7 @@ const Notifications = () => {
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null)
   const [deleteAllModal, setDeleteAllModal] = useState<{isOpen:boolean }>({isOpen:false })
 
+  console.log(setSelectedNotification)
   
   const { user } = useAuthStore();
   const {
@@ -137,7 +138,7 @@ const Notifications = () => {
  
   }
 
-  const handleCloseModal = (notificationId: number | null) => {
+  const handleCloseModal = () => {
     setDeleteModal({
       isOpen: false,
       notificationId: null
