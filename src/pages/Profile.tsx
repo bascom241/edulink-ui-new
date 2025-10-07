@@ -4,7 +4,7 @@ import { useWalletStore } from '../store/useWalletStore';
 import dayjs from "dayjs";
 import {
   User, Edit3, Save, X, Camera, BookOpen, Award, Briefcase, Link as LinkIcon,
-  Building, CreditCard, Mail, Phone, UserCheck, DollarSign, TrendingUp, Download,
+   CreditCard, Mail, Phone, UserCheck, DollarSign, TrendingUp, Download,
   Calendar, Shield, Globe, Bell, Zap
 } from 'lucide-react';
 import {
@@ -205,17 +205,6 @@ const Profile = () => {
     return null;
   };
 
-  const ClassroomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
-          <p className="font-bold text-gray-800">{label}</p>
-          <p className="text-green-600">Earnings: ₦{payload[0]?.value?.toLocaleString()}</p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 p-4 md:p-6">
@@ -644,7 +633,7 @@ const Profile = () => {
                         dataKey="value" 
                         label={({ name, percent }) => `${name}: ${((percent as any) * 100).toFixed(0)}%`}
                       >
-                        {subjectDistributionData.map((entry, index) => (
+                        {subjectDistributionData.map((index:any ) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>

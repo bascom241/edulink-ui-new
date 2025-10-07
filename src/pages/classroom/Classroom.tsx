@@ -4,15 +4,15 @@ import { useState } from "react";
 import { Check, ArrowLeft, ArrowRight } from "lucide-react";
 import Cli3 from "./steps/Cli3";
 import Cli4 from "./steps/Cli4";
-import Cli5 from "./steps/Cli5";
+
 import Cli6 from "./steps/Cli6";
 import { useClassRoomStore } from "../../store/useClassRoom";
-import { Loader } from "lucide-react";
+
 import { useAuthStore } from "../../store/useAuthStore";
 
 const Classroom = () => {
   const steps = ["Class Info", "Pricing", "Class Delivery Method",   "Review & Submit"];
-  const { createClassroom, creatingClassroom } = useClassRoomStore();
+  const { createClassroom, } = useClassRoomStore();
   const { user } = useAuthStore()
   const [formData, setFormData] = useState({
     // Step 1

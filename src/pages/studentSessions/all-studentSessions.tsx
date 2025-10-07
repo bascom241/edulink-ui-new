@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSessionStore } from '../../store/useSessionStore'
 import { useAuthStore } from '../../store/useAuthStore'
 import SessionDetail from '../sessions/sessionDetail'

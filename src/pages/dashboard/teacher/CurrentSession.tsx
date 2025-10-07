@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import toast from "react-hot-toast"
 import { Timer , Clock , Calendar} from "lucide-react"
 const CurrentSession = () => {
-    const { fetchingTeacherCurrentSession, currentTeacherSession, getCurrentSession, getCurrentTeacherSession } = useSessionStore();
+    const { fetchingTeacherCurrentSession, currentTeacherSession,  getCurrentTeacherSession } = useSessionStore();
     const { user } = useAuthStore();
     useEffect(() => {
         if (user?.email) {

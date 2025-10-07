@@ -1,6 +1,6 @@
-import React from 'react'
+
 import {motion} from "framer-motion"
-import { Star , ArrowRight , BookOpen, MessageSquare , Eye, Users , FileText , Calendar , TrendingUp} from 'lucide-react'
+import { BookOpen, MessageSquare , Eye, Users , FileText , Calendar , TrendingUp} from 'lucide-react'
 import ComingSoon from '../components/skeletons/ComingSoon'
 import { StatCard } from './StudentStartCard'
 

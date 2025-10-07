@@ -9,7 +9,7 @@ export const ContentTab: React.FC<{
   onAddResource?: () => void;
   onAddTask?: () => void;
     readOnly?: boolean;
-}> = ({ resources, tasks, onAddResource, onAddTask ,readOnly= false }) => {
+}> = ({ resources, tasks, onAddResource, onAddTask  }) => {
   const [activeContentTab, setActiveContentTab] = useState<'resources' | 'tasks'>('resources');
 
   const handleDownload = (fileUrl: string, fileName: string) => {

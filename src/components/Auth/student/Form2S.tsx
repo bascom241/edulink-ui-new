@@ -13,13 +13,6 @@ const Form2S = () => {
    totalStudentSteps 
   } = useMultiformStore();
 
-  const handleContinue = () => {
-    // Basic validation before proceeding
-    if (formData.firstName && formData.lastName && formData.phoneNumber) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     handleFormDataChange(name as keyof typeof formData, value);

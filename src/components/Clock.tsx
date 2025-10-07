@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 const Clock = ({ size, className } : any ) => (
   <svg 

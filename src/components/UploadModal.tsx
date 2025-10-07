@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, FileText, X, Plus, File, Download, Trash2, BookOpen, ClipboardList, Loader } from 'lucide-react';
+import { Upload, FileText, X,  File,  Trash2,  Loader } from 'lucide-react';
 import { useClassRoomStore } from '../store/useClassRoom';
 // Upload Modal Component
 interface UploadModalProps {

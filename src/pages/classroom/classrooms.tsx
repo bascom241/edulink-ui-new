@@ -3,8 +3,7 @@ import { Plus, Users, FileText, Calendar, ArrowRight, Eye } from 'lucide-react'
 import { useClassRoomStore } from '../../store/useClassRoom'
 import { useAuthStore } from '../../store/useAuthStore'
 import ClassroomSkeleton from '../../components/skeletons/ClassroomSkeleton'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+
 import ClassroomDetail from './classroomDetail'
 import SessionModal from '../../models/SessionModal'
 import type { SessionFormData } from '../../models/SessionModal'
@@ -14,8 +13,8 @@ const Classrooms = () => {
     const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
     const [selectedClassroomForSession, setSelectedClassroomForSession] = useState<number | null>(null);
     const { user } = useAuthStore()
-    const navigate = useNavigate();
-    const { createSession, creatingSession } = useSessionStore()
+  
+    const { createSession } = useSessionStore()
     const [selectedClassroomId, setSelectedClassroomId] = React.useState<number | null>(null);
     useEffect(() => {
         if (user && fetchInstructorClassrooms) {

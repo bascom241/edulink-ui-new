@@ -1,5 +1,5 @@
 import { useAuthStore } from "../../../store/useAuthStore";
-import { Bell, CircleUserRound } from "lucide-react"
+import { CircleUserRound } from "lucide-react"
 import NotificationIcon from "../../../icons/NotificationIcon";
 
 const Header = () => {

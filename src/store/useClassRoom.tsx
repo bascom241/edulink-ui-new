@@ -2,7 +2,7 @@ import axiosInstance from "../lib/axios";
 import { create } from "zustand";
 import type { CurrentSession } from "./useSessionStore";
 import toast from "react-hot-toast";
-import { SignalZero } from "lucide-react";
+
 
 
 export interface ClassMaterial {
@@ -311,7 +311,7 @@ export const useClassRoomStore = create<ClassRoomInterface>((set, get) => ({
 
     fetchAllCassrooms: async () => {
 
-        const { page, studentsClassrooms } = get()
+        const { page } = get()
         set({ loadingAllClassrooms: true })
         try {
             const response = await axiosInstance.get(`classroom/get-all-classrooms`, {

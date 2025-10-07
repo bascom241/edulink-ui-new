@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useClassRoomStore } from '../../store/useClassRoom'
 
 import { useAuthStore } from '../../store/useAuthStore'

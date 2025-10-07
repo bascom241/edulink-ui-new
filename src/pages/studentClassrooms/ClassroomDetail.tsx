@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useClassRoomStore } from "../../store/useClassRoom";
-import { useAuthStore } from "../../store/useAuthStore";
-import { ArrowLeft, Users, Video, BookOpen, Clock, Calendar, User } from "lucide-react";
-import { ContentTab } from "../../components/ContentTab";
+
+import { ArrowLeft,  Video,  Clock, Calendar, User } from "lucide-react";
+
 import StudentContentTab from "../../components/skeletons/StudentContentTab";
 
 interface ClassroomDetailProps {
@@ -13,7 +13,7 @@ interface ClassroomDetailProps {
 
 const ClassroomDetail = ({ id, goBack, instructorEmail }: ClassroomDetailProps) => {
     const { singleClassroom, fetchingSingleClassroom, fetchSingleClassroom } = useClassRoomStore();
-    const { user } = useAuthStore();
+  
 
     const [activeTab, setActiveTab] = useState<"overview" | "sessions" | "content">("overview");
 
@@ -47,7 +47,7 @@ const ClassroomDetail = ({ id, goBack, instructorEmail }: ClassroomDetailProps) 
         );
     }
 
-    const { className, classDescription, numberOfStudents, numberOfSessions, resources, sessions } =
+    const { className, classDescription,  sessions } =
         singleClassroom;
 
     return (

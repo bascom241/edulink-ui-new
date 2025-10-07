@@ -1,5 +1,5 @@
 import React from 'react'
-import { User, House, BookOpen, Award, TrendingUp, Users, Calendar, Star } from 'lucide-react'
+import {  House, BookOpen, Award, TrendingUp, Users, Calendar, } from 'lucide-react'
 import { useClassRoomStore } from '../../store/useClassRoom'
 import { useAuthStore } from '../../store/useAuthStore'
 import { motion } from 'framer-motion'

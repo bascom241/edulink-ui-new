@@ -8,16 +8,15 @@ import {
   Star,
   TrendingUp,
   BookOpen,
-  MessageCircle,
+ 
 } from "lucide-react";
 
 import { StatCard } from "./StudentStartCard";
-import { ActivityCard } from "./ActivityCard";
+import { useState } from "react";
 import { motion } from "framer-motion"
-import { useEffect, useState } from "react";
+
 import JoinClassModal from "../models/JoinClassModal";
-import { useClassRoomStore } from "../store/useClassRoom";
-import ClassroomDetail from "../pages/studentClassrooms/ClassroomDetail";
+
 import ComingSoon from "../components/skeletons/ComingSoon";
 export const ClassroomCard = ({ classroom, onChat, onViewDetail }: { classroom: any; onChat: (c: any) => void; onViewDetail: () => void; }) => {
 

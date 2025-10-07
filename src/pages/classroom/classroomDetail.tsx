@@ -9,11 +9,11 @@ import {
   Users,
   Video,
   BookOpen,
-  BarChart2,
+  
   Settings,
   Copy,
   Check,
-  Activity,
+
   Clock,
   Calendar,
   User,
@@ -25,7 +25,7 @@ import {
   MessageSquare,
   Eye,
   UserX,
-  Plus,
+  
 } from "lucide-react";
 import { useClassRoomStore } from "../../store/useClassRoom";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -44,7 +44,7 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
     generateInviteLink,
     fetchingInviteLink,
     uploadClassResources,
-    uploadingTasks, uploadTasks
+    uploadTasks
   } = useClassRoomStore();
   const { user } = useAuthStore();
 
@@ -192,7 +192,7 @@ const ClassroomDetail = ({ id, goBack }: Props) => {
     numberOfStudents,
     numberOfSessions,
     resources,
-    assignments,
+    
     tasks,
     sessions,
     students

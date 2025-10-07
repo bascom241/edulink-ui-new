@@ -11,7 +11,7 @@ import { useAuthStore } from './store/useAuthStore'
 import { useEffect } from 'react'
 import Classroom from './pages/classroom/Classroom'
 import Classrooms from './pages/classroom/classrooms'
-import ClassroomDetail from './pages/classroom/classroomDetail'
+
 import Sessions from './pages/sessions/sessions'
 import ManageStudents from './pages/ManageStudents'
 import Profile from './pages/Profile'

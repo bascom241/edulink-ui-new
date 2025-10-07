@@ -124,7 +124,7 @@ const ClassResourceModel = ({ setStudyResourcesModal, classId }: ResourcesModelP
 
                             {/* File Upload */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                                <label className=" text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                                     <Paperclip className="h-4 w-4 text-indigo-500" /> Upload File
                                 </label>
                                 <input

@@ -1,5 +1,5 @@
 import Header from "../../pages/dashboard/teacher/Header"
-import Introduction from "../../pages/dashboard/teacher/Introduction"
+
 import CurrentSession from "../../pages/dashboard/teacher/CurrentSession"
 import Card from "../../pages/dashboard/teacher/Card"
 import QuickActions from "../../pages/dashboard/teacher/QuickActions"

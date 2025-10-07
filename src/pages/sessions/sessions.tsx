@@ -5,7 +5,7 @@ import SessionDetail from './sessionDetail';
 
 const Sessions = () => {
   const { user } = useAuthStore();
-  const { fetchingAllInstructorSessions, getAllInstructorSessions, sessionsAllContainer, fetchinSingleInstructorSession, fetchSingleSession } = useSessionStore();
+  const { fetchingAllInstructorSessions, getAllInstructorSessions, sessionsAllContainer } = useSessionStore();
   const [activeTab, setActiveTab] = useState('all');
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   useEffect(() => {
