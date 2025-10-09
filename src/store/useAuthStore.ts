@@ -34,11 +34,11 @@ export interface User {
 
     certificateImageName: string;
     certificateImageType: string | null;
-    certificateUrl: string;
+    certificateUrl: File | null;
 
     governmentIdImageName: string;
     governmentIdImageType: string | null;
-    governmentIdUrl: string;
+    governmentIdUrl: File | null;
 
     classrooms: Classroom[];
     orders: any[];
@@ -117,23 +117,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             };
         }
     },
-    registerUser: async (formData: any) => {
-        set({ isRegistering: true })
-        try {
-            const response = await axiosInstance.post("/auth/register", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-            set({ isRegistering: false })
-            console.log(response)
-        } catch (error) {
-            if (error instanceof Error) {
-                console.log((error as any)?.response.data);
-            }
-            set({ isRegistering: false })
-        }
-    },
+  registerUser: async (formData: FormData) => {
+    console.log("Registering user with data:", formData);
+  set({ isRegistering: true });
+  try {
+    const response = await axiosInstance.post<{ message: string; data: User }>(
+      "/auth/register",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    toast.success(response.data.message || "Registration successful!");
+    window.location.href = "/login";
+  } catch (error: any) {
+    const message =
+      error?.response?.data ||
+      error.message ||
+      "Registration failed. Please try again.";
+    toast.error(message);
+    console.log("Error:", message);
+  } finally {
+    set({ isRegistering: false });
+  }
+},
+
 
     forgotPassword: async (email) => {
         set({ forgetingPassword: true })

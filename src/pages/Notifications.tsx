@@ -54,7 +54,7 @@ const Notifications = () => {
 
   const connect = (userId: number) => {
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:5000/ws"),
+      webSocketFactory: () => new SockJS("https://edulink-v1.onrender.com/ws"),
       reconnectDelay: 5000,
       onConnect: () => {
         console.log("✅ Connected to websocket via SockJS");

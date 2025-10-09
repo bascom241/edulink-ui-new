@@ -36,7 +36,7 @@ function App() {
         {/* Redirect root to external landing page */}
         <Route
           path="/"
-
+          element={<SignIn/>}
         />
 
         <Route path="/login" element={<SignIn />} />

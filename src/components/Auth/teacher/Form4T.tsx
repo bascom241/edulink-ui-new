@@ -13,33 +13,49 @@ const Form4T = () => {
   } = useMultiformStore();
 
   const progressPercentage = (currentStep / totalTeacherSteps) * 100;
-
+ const handleSubmit = () => {
   const formDataToSend = new FormData();
 
+  // Create the user request data (as JSON)
+  const userPayload = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    phoneNumber: formData.phoneNumber,
+    password: formData.password,
+    confirmPassword: formData.confirmPassword, // ✅ include this
+
+    role: formData.role,
+    shortBio: formData.shortBio,
+    socialLink: formData.socialLink,
+
+    student: formData.student,
+    teacher: formData.teacher,
+    teachingLevel: formData.teachingLevel,
+    teachingSubjects: formData.teachingSubjects,
+    yearsOfExperience: formData.yearsOfExperience,
+
+    bankAccount: formData.bankAccount,
+
+    bankName: formData.bankName,
+  };
+
+  // Append JSON payload
   formDataToSend.append(
-    "userRequestDTO", new Blob([JSON.stringify({
-      email: formData.email,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-      role: formData.role,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      phoneNumber: formData.phoneNumber,
-      teachingSubjects: formData.teachingSubjects,
-      teachingLevel: formData.teachingLevel,
-      shortBio: formData.shortBio,
-      yearsOfExperience: formData.yearsOfExperience,
-      socialLink: formData.socialLink,
-      bankAccount: formData.bankAccount,
-      bankName: formData.bankName,
-      student: formData.student,
-      teacher: formData.teacher
-    })], { type: "application/json" })
-  )
+    "userRequestDTO",
+    new Blob([JSON.stringify(userPayload)], { type: "application/json" })
+  );
 
-  formDataToSend.append("certificate", formData.certificateUrl);
-  formDataToSend.append("governmentId", formData.governmentIdUrl);
+  // Append files
+  if (formData.certificateUrl)
+    formDataToSend.append("certificate", formData.certificateUrl);
+  if (formData.governmentIdUrl)
+    formDataToSend.append("governmentId", formData.governmentIdUrl);
 
+  console.log("Submitting FormData:", userPayload);
+
+  registerUser(formDataToSend);
+};
 
 
   const { registerUser, isRegistering } = useAuthStore();
@@ -195,14 +211,14 @@ const Form4T = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => registerUser(formDataToSend)}
-              className="w-full sm:w-auto px-6 py-3 rounded-lg text-white bg-gradient-to-r from-green-500 to-blue-600 font-medium shadow hover:shadow-md transition-all"
+              onClick={handleSubmit}
+              className="flex items-center justify-center w-full sm:w-auto px-6 py-3 rounded-lg text-white bg-gradient-to-r from-green-500 to-blue-600 font-medium shadow hover:shadow-md transition-all"
             >
 
               {
-                isRegistering ?  <Loader className='animate-spin' size={24} /> : "Submit Application"        
+                isRegistering ? <Loader className='animate-spin' size={24} /> : "Submit Application"
               }
-              
+
             </motion.button>
           </div>
         </div>
